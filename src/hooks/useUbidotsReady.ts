@@ -1,4 +1,4 @@
-import { useUbidots } from './useUbidots';
+import { useUbidots } from '../context/ubidots';
 
 export function useUbidotsReady() {
   const { state } = useUbidots();

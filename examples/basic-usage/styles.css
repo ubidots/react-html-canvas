@@ -1,0 +1,71 @@
+.container {
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.header {
+  background: #343a40;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.content {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.loading {
+  padding: 20px;
+  text-align: center;
+}
+
+.device-info {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.no-device {
+  background: #fff3cd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.device-details {
+  margin-top: 10px;
+}
+
+.device-json {
+  background: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  overflow: auto;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.button-primary {
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button-success {
+  padding: 10px 15px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

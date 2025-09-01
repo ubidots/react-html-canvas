@@ -1,0 +1,150 @@
+.container {
+  min-height: 100vh;
+  max-height: 100vh;
+  background: #f0f2f5;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.main-content {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.data-section {
+  flex: 1 1 600px;
+  min-width: 600px;
+}
+
+.actions-section {
+  flex: 1 1 400px;
+  min-width: 400px;
+}
+
+.data-display {
+  padding: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px 0;
+}
+
+.code-block {
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+  border: 1px solid #e9ecef;
+  overflow: auto;
+  max-height: 200px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.actions-panel {
+  padding: 20px;
+  background: #f8f9fa;
+}
+
+.action-group {
+  margin-bottom: 20px;
+}
+
+.input-group {
+  margin-bottom: 10px;
+}
+
+.input-field {
+  padding: 8px;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.input-device {
+  width: 200px;
+}
+
+.input-devices {
+  width: 300px;
+}
+
+.input-url {
+  width: 250px;
+}
+
+.input-width {
+  width: 80px;
+}
+
+.button {
+  padding: 8px 12px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.button-primary {
+  background: #007bff;
+  color: white;
+}
+
+.button-success {
+  background: #28a745;
+  color: white;
+}
+
+.button-warning {
+  background: #ffc107;
+  color: black;
+}
+
+.button-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.event-log {
+  padding: 20px;
+}
+
+.log-display {
+  background: #000;
+  color: #00ff00;
+  padding: 15px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  height: 200px;
+  overflow: auto;
+}
+
+.footer {
+  background: #343a40;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+}

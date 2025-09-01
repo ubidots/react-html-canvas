@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import { UbidotsProvider } from '../UbidotsProvider';
+import { UbidotsProvider } from '../ubidots';
 import { useUbidotsReady, useUbidotsSelectedDevice } from '@/hooks';
 
 function Probe() {
@@ -27,7 +27,6 @@ describe('UbidotsProvider', () => {
       </UbidotsProvider>
     );
 
-    // simulate messages
     window.dispatchEvent(
       new MessageEvent('message', {
         data: { event: 'receivedToken', payload: 'T' },

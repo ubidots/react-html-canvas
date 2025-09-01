@@ -1,37 +1,46 @@
-import { useUbidots } from './useUbidots';
+import { useUbidots } from '../context/ubidots';
 
 export function useUbidotsToken() {
-  return useUbidots().state.token;
+  const { state } = useUbidots();
+  return state.token;
 }
 
 export function useUbidotsJWT() {
-  return useUbidots().state.jwtToken;
+  const { state } = useUbidots();
+  return state.jwtToken;
 }
 
 export function useUbidotsSelectedDevice() {
-  return useUbidots().state.selectedDevice;
+  const { state } = useUbidots();
+  return state.selectedDevice;
 }
 
 export function useUbidotsSelectedDevices() {
-  return useUbidots().state.selectedDevices;
+  const { state } = useUbidots();
+  return state.selectedDevices;
 }
 
 export function useUbidotsDashboardDateRange() {
-  return useUbidots().state.dateRange;
+  const { state } = useUbidots();
+  return state.dateRange;
 }
 
 export function useUbidotsRealTimeStatus() {
-  return useUbidots().state.realTime;
+  const { state } = useUbidots();
+  return state.realTime;
 }
 
 export function useUbidotsDeviceObject() {
-  return useUbidots().state.deviceObject;
+  const { state } = useUbidots();
+  return state.deviceObject;
 }
 
 export function useUbidotsDashboardObject() {
-  return useUbidots().state.dashboardObject;
+  const { state } = useUbidots();
+  return state.dashboardObject;
 }
 
 export function useUbidotsWidget() {
-  return useUbidots().state.widget;
+  const { state } = useUbidots();
+  return state.widget;
 }

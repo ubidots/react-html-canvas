@@ -5,25 +5,12 @@ import {
   withUbidotsActions,
   compose,
 } from '@ubidots/react-html-canvas';
+import './styles.css';
 
-// Component that receives device as prop via HOC
-interface DeviceDisplayProps {
-  selectedDevice?: {
-    id: string;
-    name?: string;
-    label?: string;
-    description?: string;
-  } | null;
-  title?: string;
-}
-
-function DeviceDisplay({
-  selectedDevice,
-  title = 'Device Information',
-}: DeviceDisplayProps) {
+function DeviceDisplay({ selectedDevice, title = 'Device Information' }) {
   if (!selectedDevice) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div className='device-display-empty'>
         <h3>{title}</h3>
         <p>No device selected</p>
       </div>
@@ -31,18 +18,9 @@ function DeviceDisplay({
   }
 
   return (
-    <div
-      style={{
-        padding: '20px',
-        border: '1px solid #ddd',
-        borderRadius: '8px',
-        margin: '10px 0',
-      }}
-    >
+    <div className='device-display'>
       <h3>{title}</h3>
-      <div
-        style={{ background: '#f8f9fa', padding: '15px', borderRadius: '4px' }}
-      >
+      <div className='device-info'>
         <p>
           <strong>ID:</strong> {selectedDevice.id}
         </p>
@@ -59,18 +37,9 @@ function DeviceDisplay({
           </p>
         )}
 
-        <details style={{ marginTop: '10px' }}>
+        <details className='device-details'>
           <summary>View all properties</summary>
-          <pre
-            style={{
-              background: '#fff',
-              padding: '10px',
-              borderRadius: '4px',
-              fontSize: '12px',
-              overflow: 'auto',
-              marginTop: '10px',
-            }}
-          >
+          <pre className='device-json'>
             {JSON.stringify(selectedDevice, null, 2)}
           </pre>
         </details>
@@ -79,68 +48,38 @@ function DeviceDisplay({
   );
 }
 
-// Component that receives actions as prop via HOC
-interface DeviceControlsProps {
-  ubidotsActions?: {
-    setDashboardDevice: (deviceId: string) => void;
-    setDashboardMultipleDevices: (deviceIds: string[]) => void;
-    setDashboardDateRange: (range: {
-      startTime: number;
-      endTime: number;
-    }) => void;
-    setRealTime: (rt: boolean) => void;
-    refreshDashboard: () => void;
-    openDrawer: (opts: { url: string; width: number }) => void;
-    setFullScreen: (setting: 'toggle' | 'enable' | 'disabled') => void;
-    getHeaders: () => Record<string, string>;
-  };
-  deviceId?: string;
-}
-
-function DeviceControls({
-  ubidotsActions,
-  deviceId = 'example-device',
-}: DeviceControlsProps) {
+function DeviceControls({ ubidotsActions, deviceId = 'example-device' }) {
   if (!ubidotsActions) {
     return <div>Actions not available</div>;
   }
 
-  const buttonStyle = {
-    padding: '10px 15px',
-    margin: '5px',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  };
-
   return (
-    <div style={{ padding: '20px' }}>
+    <div className='device-controls'>
       <h3>Device Controls</h3>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+      <div className='button-group'>
         <button
-          style={{ ...buttonStyle, background: '#007bff', color: 'white' }}
+          className='button button-primary'
           onClick={() => ubidotsActions.setDashboardDevice(deviceId)}
         >
           Select Device
         </button>
 
         <button
-          style={{ ...buttonStyle, background: '#28a745', color: 'white' }}
+          className='button button-success'
           onClick={ubidotsActions.refreshDashboard}
         >
           🔄 Refresh
         </button>
 
         <button
-          style={{ ...buttonStyle, background: '#17a2b8', color: 'white' }}
+          className='button button-info'
           onClick={() => ubidotsActions.setRealTime(true)}
         >
           ⚡ Enable Real-time
         </button>
 
         <button
-          style={{ ...buttonStyle, background: '#dc3545', color: 'white' }}
+          className='button button-danger'
           onClick={() => ubidotsActions.setRealTime(false)}
         >
           ⏸️ Disable Real-time
@@ -150,37 +89,10 @@ function DeviceControls({
   );
 }
 
-// Component that receives both device and actions via HOCs
-interface CombinedWidgetProps {
-  selectedDevice?: {
-    id: string;
-    name?: string;
-    label?: string;
-    description?: string;
-  } | null;
-  ubidotsActions?: {
-    setDashboardDevice: (deviceId: string) => void;
-    setDashboardMultipleDevices: (deviceIds: string[]) => void;
-    setDashboardDateRange: (range: {
-      startTime: number;
-      endTime: number;
-    }) => void;
-    setRealTime: (rt: boolean) => void;
-    refreshDashboard: () => void;
-    openDrawer: (opts: { url: string; width: number }) => void;
-    setFullScreen: (setting: 'toggle' | 'enable' | 'disabled') => void;
-    getHeaders: () => Record<string, string>;
-  };
-}
-
-function CombinedWidget({
-  selectedDevice,
-  ubidotsActions,
-}: CombinedWidgetProps) {
+function CombinedWidget({ selectedDevice, ubidotsActions }) {
   const handleQuickActions = () => {
     if (!ubidotsActions) return;
 
-    // Set a date range for the last hour
     const now = Date.now();
     const oneHourAgo = now - 60 * 60 * 1000;
 
@@ -190,63 +102,32 @@ function CombinedWidget({
     });
   };
 
-  const switchDevice = (deviceId: string) => {
+  const switchDevice = deviceId => {
     if (ubidotsActions) {
       ubidotsActions.setDashboardDevice(deviceId);
     }
   };
 
   return (
-    <div
-      style={{
-        padding: '20px',
-        border: '2px solid #007bff',
-        borderRadius: '8px',
-        background: '#f8f9fa',
-      }}
-    >
+    <div className='combined-widget'>
       <h3>🚀 Combined Widget (Device + Actions)</h3>
 
       {selectedDevice ? (
-        <div style={{ marginBottom: '20px' }}>
+        <div className='current-device'>
           <h4>Current Device</h4>
-          <p
-            style={{
-              background: '#d4edda',
-              padding: '10px',
-              borderRadius: '4px',
-              border: '1px solid #c3e6cb',
-            }}
-          >
+          <p className='device-selected'>
             📱 {selectedDevice.name || selectedDevice.id}
           </p>
         </div>
       ) : (
-        <div
-          style={{
-            background: '#fff3cd',
-            padding: '15px',
-            borderRadius: '4px',
-            border: '1px solid #ffeaa7',
-            marginBottom: '20px',
-          }}
-        >
-          ⚠️ No device selected
-        </div>
+        <div className='device-none'>⚠️ No device selected</div>
       )}
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+      <div className='button-group'>
         <button
           onClick={handleQuickActions}
           disabled={!ubidotsActions}
-          style={{
-            padding: '10px 15px',
-            background: ubidotsActions ? '#28a745' : '#ccc',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: ubidotsActions ? 'pointer' : 'not-allowed',
-          }}
+          className={`button ${ubidotsActions ? 'button-success' : ''}`}
         >
           📅 Set Last Hour Range
         </button>
@@ -254,14 +135,7 @@ function CombinedWidget({
         <button
           onClick={() => switchDevice('sensor-001')}
           disabled={!ubidotsActions}
-          style={{
-            padding: '10px 15px',
-            background: ubidotsActions ? '#007bff' : '#ccc',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: ubidotsActions ? 'pointer' : 'not-allowed',
-          }}
+          className={`button ${ubidotsActions ? 'button-primary' : ''}`}
         >
           🌡️ Switch to Sensor 001
         </button>
@@ -269,14 +143,7 @@ function CombinedWidget({
         <button
           onClick={() => switchDevice('sensor-002')}
           disabled={!ubidotsActions}
-          style={{
-            padding: '10px 15px',
-            background: ubidotsActions ? '#6f42c1' : '#ccc',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: ubidotsActions ? 'pointer' : 'not-allowed',
-          }}
+          className={`button ${ubidotsActions ? 'button-purple' : ''}`}
         >
           💧 Switch to Sensor 002
         </button>
@@ -285,30 +152,24 @@ function CombinedWidget({
   );
 }
 
-// Create enhanced components using HOCs
 const EnhancedDeviceDisplay = withSelectedDevice(DeviceDisplay);
 const EnhancedDeviceControls = withUbidotsActions(DeviceControls);
 
-// Create a component with multiple HOCs using compose
 const EnhancedCombinedWidget = compose(
   withSelectedDevice,
   withUbidotsActions
 )(CombinedWidget);
 
-// Alternative way to compose HOCs manually
 const ManuallyComposedWidget = withSelectedDevice(
   withUbidotsActions(CombinedWidget)
 );
 
-// Class component example with HOCs
-class ClassDeviceDisplay extends React.Component<DeviceDisplayProps> {
+class ClassDeviceDisplay extends React.Component {
   render() {
     const { selectedDevice } = this.props;
 
     return (
-      <div
-        style={{ padding: '20px', background: '#e9ecef', borderRadius: '8px' }}
-      >
+      <div className='class-component'>
         <h3>📊 Class Component with HOC</h3>
         {selectedDevice ? (
           <div>
@@ -327,36 +188,29 @@ const EnhancedClassComponent = withSelectedDevice(ClassDeviceDisplay);
 
 export function WithHocsExample() {
   return (
-    <UbidotsProvider readyEvents={['receivedToken']}>
-      <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-        <header
-          style={{
-            background: '#343a40',
-            color: 'white',
-            padding: '20px',
-            textAlign: 'center',
-          }}
-        >
+    <UbidotsProvider>
+      <div className='container'>
+        <header className='header'>
           <h1>🔧 Higher-Order Components (HOCs) Example</h1>
           <p>
             Demonstrates using withSelectedDevice and withUbidotsActions HOCs
           </p>
         </header>
 
-        <div style={{ padding: '20px' }}>
-          <div style={{ marginBottom: '30px' }}>
+        <div className='content'>
+          <div className='section'>
             <h2>📱 Device Display (withSelectedDevice HOC)</h2>
             <p>Component receives selectedDevice as prop automatically</p>
             <EnhancedDeviceDisplay title='Enhanced Device Display' />
           </div>
 
-          <div style={{ marginBottom: '30px' }}>
+          <div className='section'>
             <h2>🎮 Device Controls (withUbidotsActions HOC)</h2>
             <p>Component receives ubidotsActions as prop automatically</p>
             <EnhancedDeviceControls deviceId='test-device-123' />
           </div>
 
-          <div style={{ marginBottom: '30px' }}>
+          <div className='section'>
             <h2>🚀 Combined Widget (Multiple HOCs with compose)</h2>
             <p>
               Component receives both selectedDevice and ubidotsActions props
@@ -364,7 +218,7 @@ export function WithHocsExample() {
             <EnhancedCombinedWidget />
           </div>
 
-          <div style={{ marginBottom: '30px' }}>
+          <div className='section'>
             <h2>🔄 Manually Composed Widget</h2>
             <p>
               Same as above but composed manually without the compose utility
@@ -372,22 +226,15 @@ export function WithHocsExample() {
             <ManuallyComposedWidget />
           </div>
 
-          <div style={{ marginBottom: '30px' }}>
+          <div className='section'>
             <h2>📊 Class Component with HOC</h2>
             <p>HOCs work with class components too</p>
             <EnhancedClassComponent />
           </div>
 
-          <div
-            style={{
-              background: '#d1ecf1',
-              padding: '20px',
-              borderRadius: '8px',
-              border: '1px solid #bee5eb',
-            }}
-          >
+          <div className='benefits-section'>
             <h3>💡 HOC Benefits</h3>
-            <ul>
+            <ul className='benefits-list'>
               <li>
                 ✅ <strong>Prop Injection:</strong> Automatically inject Ubidots
                 data as props
@@ -415,35 +262,21 @@ export function WithHocsExample() {
             </ul>
           </div>
 
-          <div
-            style={{
-              background: '#fff3cd',
-              padding: '20px',
-              borderRadius: '8px',
-              border: '1px solid #ffeaa7',
-              marginTop: '20px',
-            }}
-          >
+          <div className='comparison-section'>
             <h3>🎯 When to Use HOCs vs Hooks</h3>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '20px',
-              }}
-            >
-              <div>
+            <div className='comparison-grid'>
+              <div className='comparison-column'>
                 <h4>Use HOCs when:</h4>
-                <ul>
+                <ul className='comparison-list'>
                   <li>Working with class components</li>
                   <li>Need to inject props consistently</li>
                   <li>Want to enhance existing components</li>
                   <li>Building reusable component libraries</li>
                 </ul>
               </div>
-              <div>
+              <div className='comparison-column'>
                 <h4>Use Hooks when:</h4>
-                <ul>
+                <ul className='comparison-list'>
                   <li>Working with functional components</li>
                   <li>Need more control over data flow</li>
                   <li>Want to handle loading/error states</li>
