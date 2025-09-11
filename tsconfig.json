@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "jsx": "react",
+    "declaration": true,
+    "declarationDir": "dist",
+    "outDir": "dist",
+    "moduleResolution": "Bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/types": ["src/types/index.ts"],
+      "@/types/*": ["src/types/*"],
+      "@/context": ["src/context"],
+      "@/context/*": ["src/context/*"],
+      "@/hooks": ["src/hooks/index.ts"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/hocs": ["src/hocs/index.ts"],
+      "@/hocs/*": ["src/hocs/*"],
+      "@/services": ["src/services"],
+      "@/services/*": ["src/services/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

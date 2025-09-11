@@ -1,0 +1,166 @@
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.header {
+  background: #343a40;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.content {
+  padding: 20px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.device-display {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.device-display-empty {
+  padding: 20px;
+  text-align: center;
+}
+
+.device-info {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.device-details {
+  margin-top: 10px;
+}
+
+.device-json {
+  background: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  overflow: auto;
+  margin-top: 10px;
+}
+
+.device-controls {
+  padding: 20px;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.button {
+  padding: 10px 15px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.button-primary {
+  background: #007bff;
+  color: white;
+}
+
+.button-success {
+  background: #28a745;
+  color: white;
+}
+
+.button-info {
+  background: #17a2b8;
+  color: white;
+}
+
+.button-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.button-purple {
+  background: #6f42c1;
+  color: white;
+}
+
+.button:disabled {
+  background: #ccc !important;
+  cursor: not-allowed;
+}
+
+.combined-widget {
+  padding: 20px;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  background: #f8f9fa;
+}
+
+.current-device {
+  margin-bottom: 20px;
+}
+
+.device-selected {
+  background: #d4edda;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #c3e6cb;
+}
+
+.device-none {
+  background: #fff3cd;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #ffeaa7;
+  margin-bottom: 20px;
+}
+
+.class-component {
+  padding: 20px;
+  background: #e9ecef;
+  border-radius: 8px;
+}
+
+.benefits-section {
+  background: #d1ecf1;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #bee5eb;
+}
+
+.benefits-list {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.comparison-section {
+  background: #fff3cd;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ffeaa7;
+  margin-top: 20px;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.comparison-column h4 {
+  margin-bottom: 10px;
+}
+
+.comparison-list {
+  margin: 0;
+  padding-left: 20px;
+}

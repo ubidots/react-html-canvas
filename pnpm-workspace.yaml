@@ -1,0 +1,5 @@
+# PNPM Workspace Configuration
+packages:
+  - '.'
+  - 'examples/*'
+package-manager-strict: false

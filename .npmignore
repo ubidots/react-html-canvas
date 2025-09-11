@@ -1,0 +1,85 @@
+# Source files (solo incluir dist/)
+src/
+public/
+
+# Development files
+*.config.js
+*.config.ts
+vite.config.ts
+tsconfig.json
+tsconfig.*.json
+
+# Testing
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+coverage/
+.nyc_output/
+vitest.config.ts
+
+# Development dependencies
+node_modules/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Documentation development (keep in repo but exclude from npm package)
+docs/
+examples/
+demo/
+
+# Environment files
+.env*
+
+# Logs
+*.log
+logs/
+
+# Cache
+.cache/
+.parcel-cache/
+.rpt2_cache/
+.rts2_cache_*/
+
+# Temporary files
+tmp/
+temp/
+
+# Development scripts
+scripts/
+
+# Linting
+.eslintrc*
+.prettierrc*
+.editorconfig
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts (except dist/)
+build/
+lib/
+es/
+cjs/
+
+# Only include what's specified in package.json "files" field
