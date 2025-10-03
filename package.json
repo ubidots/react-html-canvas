@@ -1,6 +1,6 @@
 {
   "name": "@ubidots/react-html-canvas",
-  "version": "0.0.4",
+  "version": "0.1.0-0.0.3.0",
   "description": "React library to interact with Ubidots Dashboards from HTML Canvas widgets (Provider + hooks + actions)",
   "license": "MIT",
   "author": "Ubidots",
