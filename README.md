@@ -127,6 +127,10 @@ This project uses ESLint for linting and Prettier for code formatting to ensure 
 #### Available Scripts
 
 ```bash
+
+# Install dependencies
+pnpm install
+
 # Run linter
 pnpm run lint
 
