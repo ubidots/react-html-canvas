@@ -35,7 +35,7 @@ describe('UbidotsProvider', () => {
     );
     window.dispatchEvent(
       new MessageEvent('message', {
-        data: { event: 'selectedDevice', payload: { id: 'd1' } },
+        data: { event: 'selectedDevice', payload: 'd1' },
         origin: 'http://localhost',
       })
     );

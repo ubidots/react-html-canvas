@@ -40,10 +40,13 @@ const messageHandlers: Record<string, MessageHandler> = {
   },
 
   [INBOUND_EVENTS.SELECTED_DEVICE]: (payload, dispatch, satisfiedEventsRef) => {
-    dispatch({
-      type: ACTION_TYPES.SELECTED_DEVICE,
-      payload: payload as Device | null,
-    });
+    let validatedPayload: Device | null = null;
+    if (typeof payload === 'string') {
+      const firstDeviceId = payload.split(',')[0].trim();
+      if (firstDeviceId) validatedPayload = { id: firstDeviceId };
+    }
+
+    dispatch({ type: ACTION_TYPES.SELECTED_DEVICE, payload: validatedPayload });
     satisfiedEventsRef.current.add('selectedDevice');
   },
 
