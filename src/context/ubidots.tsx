@@ -86,6 +86,7 @@ export function UbidotsProvider({
           satisfiedEventsRef,
           readyRef,
           dispatch,
+          state,
           onReady
         );
       }
@@ -93,7 +94,18 @@ export function UbidotsProvider({
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [isOriginValid, onReady, readyEvents]);
+  }, [isOriginValid, onReady, readyEvents, state]);
+
+  useEffect(() => {
+    checkReadyState(
+      readyEvents,
+      satisfiedEventsRef,
+      readyRef,
+      dispatch,
+      state,
+      onReady
+    );
+  }, [state, readyEvents, onReady]);
 
   const actions = useMemo(
     () => createActions(state.jwtToken, state.token),
