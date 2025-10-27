@@ -19,6 +19,7 @@ export const OUTBOUND_EVENTS = {
   SET_DASHBOARD_DEVICE: 'setDashboardDevice',
   SET_DASHBOARD_MULTIPLE_DEVICES: 'setDashboardMultipleDevices',
   SET_DASHBOARD_DATE_RANGE: 'setDashboardDateRange',
+  SET_DASHBOARD_LAYER: 'setDashboardLayer',
   SET_REAL_TIME: 'setRealTime',
   REFRESH_DASHBOARD: 'refreshDashboard',
   OPEN_DRAWER: 'openDrawer',

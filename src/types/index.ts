@@ -68,6 +68,7 @@ export interface OutboundActions {
   setDashboardDevice: (deviceId: string) => void;
   setDashboardMultipleDevices: (deviceIds: string[]) => void;
   setDashboardDateRange: (range: DateRange) => void;
+  setDashboardLayer: (layerId: string) => void;
   setRealTime: (rt: boolean) => void;
   refreshDashboard: () => void;
   openDrawer: (opts: { url: string; width: number }) => void;

@@ -78,6 +78,7 @@ export default function App() {
   - setDashboardDevice(deviceId: string)
   - setDashboardMultipleDevices(deviceIds: string[])
   - setDashboardDateRange(range: { startTime: number; endTime: number })
+  - setDashboardLayer(layerId: string)
   - setRealTime(rt: boolean)
   - refreshDashboard()
   - openDrawer({ url: string; width: number })
