@@ -6,6 +6,8 @@ export type ReadyEvent =
   | 'selectedDashboardDateRange'
   | 'selectedDashboardObject'
   | 'selectedDeviceObject'
+  | 'selectedDeviceObjects'
+  | 'selectedFilters'
   | 'isRealTimeActive';
 
 export interface Device {
@@ -39,6 +41,10 @@ export interface WidgetInfo {
   settings?: Record<string, unknown>;
 }
 
+export interface FilterValue {
+  [k: string]: unknown;
+}
+
 export interface UbidotsState {
   ready: boolean;
   token: string | null;
@@ -48,6 +54,8 @@ export interface UbidotsState {
   dateRange: DateRange | null;
   dashboardObject: DashboardObject | null;
   deviceObject: DeviceObject | null;
+  selectedDeviceObjects: DeviceObject[] | null;
+  selectedFilters: FilterValue[] | null;
   realTime: boolean | null;
   widget: WidgetInfo | null;
 }
@@ -60,6 +68,8 @@ export type UbidotsAction =
   | { type: 'SELECTED_DASHBOARD_DATE_RANGE'; payload: DateRange | null }
   | { type: 'SELECTED_DASHBOARD_OBJECT'; payload: DashboardObject | null }
   | { type: 'SELECTED_DEVICE_OBJECT'; payload: DeviceObject | null }
+  | { type: 'SELECTED_DEVICE_OBJECTS'; payload: DeviceObject[] | null }
+  | { type: 'SELECTED_FILTERS'; payload: FilterValue[] | null }
   | { type: 'REAL_TIME_STATUS'; payload: boolean | null }
   | { type: 'SET_READY'; payload: boolean }
   | { type: 'SET_WIDGET'; payload: WidgetInfo | null };

@@ -6,6 +6,7 @@ import type {
   DashboardObject,
   DeviceObject,
   WidgetInfo,
+  FilterValue,
 } from '@/types';
 import { ACTION_TYPES } from './constants';
 
@@ -18,6 +19,8 @@ export const initialState: UbidotsState = {
   dateRange: null,
   dashboardObject: null,
   deviceObject: null,
+  selectedDeviceObjects: null,
+  selectedFilters: null,
   realTime: null,
   widget: null,
 };
@@ -56,6 +59,14 @@ const reducerHandlers: Record<
   [ACTION_TYPES.SELECTED_DEVICE_OBJECT]: (state, action) => ({
     ...state,
     deviceObject: action.payload as DeviceObject | null,
+  }),
+  [ACTION_TYPES.SELECTED_DEVICE_OBJECTS]: (state, action) => ({
+    ...state,
+    selectedDeviceObjects: action.payload as DeviceObject[] | null,
+  }),
+  [ACTION_TYPES.SELECTED_FILTERS]: (state, action) => ({
+    ...state,
+    selectedFilters: action.payload as FilterValue[] | null,
   }),
   [ACTION_TYPES.REAL_TIME_STATUS]: (state, action) => ({
     ...state,

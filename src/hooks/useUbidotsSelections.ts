@@ -44,3 +44,13 @@ export function useUbidotsWidget() {
   const { state } = useUbidots();
   return state.widget;
 }
+
+export function useUbidotsSelectedDeviceObjects() {
+  const { state } = useUbidots();
+  return state.selectedDeviceObjects;
+}
+
+export function useUbidotsSelectedFilters() {
+  const { state } = useUbidots();
+  return state.selectedFilters;
+}
