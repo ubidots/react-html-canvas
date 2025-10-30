@@ -52,11 +52,13 @@ const actionCreators = {
 
   refreshDashboard: () => postMessage(OUTBOUND_EVENTS.REFRESH_DASHBOARD),
 
-  openDrawer: (opts: { url: string; width: number }) =>
-    postMessage(OUTBOUND_EVENTS.OPEN_DRAWER, {
-      drawerInfo: opts,
-      id: 'react-widget',
-    }),
+  openDrawer: (opts: { url: string; width: number }) => {
+    const id =
+      typeof window !== 'undefined'
+        ? (window as unknown as Record<string, unknown>).widgetId
+        : 'react-widget';
+    postMessage(OUTBOUND_EVENTS.OPEN_DRAWER, { drawerInfo: opts, id });
+  },
 
   setFullScreen: (setting: 'toggle' | 'enable' | 'disabled') =>
     postMessage(OUTBOUND_EVENTS.SET_FULL_SCREEN, setting),
