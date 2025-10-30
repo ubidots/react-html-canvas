@@ -6,6 +6,7 @@ import type {
   DateRange,
   DashboardObject,
   DeviceObject,
+  FilterValue,
   ReadyEvent,
 } from '@/types';
 import { INBOUND_EVENTS, ACTION_TYPES } from './constants';
@@ -97,6 +98,30 @@ const messageHandlers: Record<string, MessageHandler> = {
       payload: payload as DeviceObject | null,
     });
     satisfiedEventsRef.current.add('selectedDeviceObject');
+  },
+
+  [INBOUND_EVENTS.SELECTED_DEVICE_OBJECTS]: (
+    payload,
+    dispatch,
+    satisfiedEventsRef
+  ) => {
+    dispatch({
+      type: ACTION_TYPES.SELECTED_DEVICE_OBJECTS,
+      payload: payload as DeviceObject[] | null,
+    });
+    satisfiedEventsRef.current.add('selectedDeviceObjects');
+  },
+
+  [INBOUND_EVENTS.SELECTED_FILTERS]: (
+    payload,
+    dispatch,
+    satisfiedEventsRef
+  ) => {
+    dispatch({
+      type: ACTION_TYPES.SELECTED_FILTERS,
+      payload: payload as FilterValue[] | null,
+    });
+    satisfiedEventsRef.current.add('selectedFilters');
   },
 
   [INBOUND_EVENTS.IS_REAL_TIME_ACTIVE]: (
