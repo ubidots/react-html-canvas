@@ -74,6 +74,9 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   },
+  "dependencies": {
+    "@ubidots/ubidots-javascript-library": "^1.2.1"
+  },
   "keywords": [
     "ubidots",
     "react",
