@@ -45,15 +45,20 @@ const actionCreators = {
   setDashboardDateRange: (range: DateRange) =>
     postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_DATE_RANGE, range),
 
+  setDashboardLayer: (layerId: string) =>
+    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_LAYER, layerId),
+
   setRealTime: (rt: boolean) => postMessage(OUTBOUND_EVENTS.SET_REAL_TIME, rt),
 
   refreshDashboard: () => postMessage(OUTBOUND_EVENTS.REFRESH_DASHBOARD),
 
-  openDrawer: (opts: { url: string; width: number }) =>
-    postMessage(OUTBOUND_EVENTS.OPEN_DRAWER, {
-      drawerInfo: opts,
-      id: 'react-widget',
-    }),
+  openDrawer: (opts: { url: string; width: number }) => {
+    const id =
+      typeof window !== 'undefined'
+        ? (window as unknown as Record<string, unknown>).widgetId
+        : 'react-widget';
+    postMessage(OUTBOUND_EVENTS.OPEN_DRAWER, { drawerInfo: opts, id });
+  },
 
   setFullScreen: (setting: 'toggle' | 'enable' | 'disable') =>
     postMessage(OUTBOUND_EVENTS.SET_FULL_SCREEN, setting),

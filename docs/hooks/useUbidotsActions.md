@@ -30,6 +30,7 @@ The `useUbidotsActions` hook returns an object containing all available actions 
 
 - `refreshDashboard()` - Refresh the entire dashboard
 - `setFullScreen(setting: 'toggle' | 'enable' | 'disable')` - Control fullscreen mode
+- `setDashboardLayer(layerId: string)` - Switch to a specific dashboard layer
 
 ### UI Actions
 
@@ -186,11 +187,16 @@ function RealTimeToggle() {
 import { useUbidotsActions } from '@ubidots/react-html-canvas';
 
 function DashboardControls() {
-  const { refreshDashboard, setFullScreen } = useUbidotsActions();
+  const { refreshDashboard, setFullScreen, setDashboardLayer } =
+    useUbidotsActions();
 
   return (
     <div>
       <button onClick={refreshDashboard}>🔄 Refresh Dashboard</button>
+
+      <button onClick={() => setDashboardLayer('layer-id')}>
+        📊 Switch to Layer
+      </button>
 
       <button onClick={() => setFullScreen('toggle')}>
         🔄 Toggle Fullscreen
@@ -209,6 +215,8 @@ function DashboardControls() {
 ```
 
 ### Drawer Integration
+
+The `openDrawer` action automatically uses `window.widgetId` when available (set by the Ubidots platform), ensuring proper widget identification for drawer functionality.
 
 ```tsx
 import { useUbidotsActions } from '@ubidots/react-html-canvas';
@@ -246,6 +254,8 @@ function DrawerControls() {
   );
 }
 ```
+
+> **Note:** The drawer functionality requires `window.widgetId` to be set by the Ubidots platform. This is automatically handled when your widget runs inside a Ubidots dashboard.
 
 ### API Authentication
 

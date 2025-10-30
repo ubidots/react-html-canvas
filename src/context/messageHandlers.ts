@@ -1,10 +1,12 @@
 import type { Dispatch } from 'react';
 import type {
   UbidotsAction,
+  UbidotsState,
   Device,
   DateRange,
   DashboardObject,
   DeviceObject,
+  FilterValue,
   ReadyEvent,
 } from '@/types';
 import { INBOUND_EVENTS, ACTION_TYPES } from './constants';
@@ -40,10 +42,13 @@ const messageHandlers: Record<string, MessageHandler> = {
   },
 
   [INBOUND_EVENTS.SELECTED_DEVICE]: (payload, dispatch, satisfiedEventsRef) => {
-    dispatch({
-      type: ACTION_TYPES.SELECTED_DEVICE,
-      payload: payload as Device | null,
-    });
+    let validatedPayload: Device | null = null;
+    if (typeof payload === 'string') {
+      const firstDeviceId = payload.split(',')[0].trim();
+      if (firstDeviceId) validatedPayload = { id: firstDeviceId };
+    }
+
+    dispatch({ type: ACTION_TYPES.SELECTED_DEVICE, payload: validatedPayload });
     satisfiedEventsRef.current.add('selectedDevice');
   },
 
@@ -95,6 +100,30 @@ const messageHandlers: Record<string, MessageHandler> = {
     satisfiedEventsRef.current.add('selectedDeviceObject');
   },
 
+  [INBOUND_EVENTS.SELECTED_DEVICE_OBJECTS]: (
+    payload,
+    dispatch,
+    satisfiedEventsRef
+  ) => {
+    dispatch({
+      type: ACTION_TYPES.SELECTED_DEVICE_OBJECTS,
+      payload: payload as DeviceObject[] | null,
+    });
+    satisfiedEventsRef.current.add('selectedDeviceObjects');
+  },
+
+  [INBOUND_EVENTS.SELECTED_FILTERS]: (
+    payload,
+    dispatch,
+    satisfiedEventsRef
+  ) => {
+    dispatch({
+      type: ACTION_TYPES.SELECTED_FILTERS,
+      payload: payload as FilterValue[] | null,
+    });
+    satisfiedEventsRef.current.add('selectedFilters');
+  },
+
   [INBOUND_EVENTS.IS_REAL_TIME_ACTIVE]: (
     payload,
     dispatch,
@@ -124,20 +153,40 @@ export function handleInboundMessage(
 }
 
 /**
+ * Check if the state has all required values defined (for public dashboards)
+ * This mimics the vanilla JS library behavior where ready state is determined
+ * by checking if certain state values are defined, not just by events.
+ */
+function checkStateValuesReady(state: UbidotsState): boolean {
+  const hasToken = state.token !== null || state.jwtToken !== null;
+  const hasDevice = state.selectedDevice !== null;
+  const hasDateRange = state.dateRange !== null;
+  const hasDashboardObject = state.dashboardObject !== null;
+  return hasToken && hasDevice && hasDateRange && hasDashboardObject;
+}
+
+/**
  * Check if all required events are satisfied and update ready state
+ *
+ * This function checks two conditions:
+ * 1. All required events from readyEvents array have been satisfied
+ * 2. OR the state has all required values defined (for public dashboards)
  */
 export function checkReadyState(
   readyEvents: ReadyEvent[],
   satisfiedEventsRef: React.MutableRefObject<Set<ReadyEvent>>,
   readyRef: React.MutableRefObject<boolean>,
   dispatch: Dispatch<UbidotsAction>,
+  state: UbidotsState,
   onReady?: () => void
 ): void {
   if (!readyRef.current) {
     const allEventsSatisfied = readyEvents.every(e =>
       satisfiedEventsRef.current.has(e)
     );
-    if (allEventsSatisfied) {
+
+    const stateValuesReady = checkStateValuesReady(state);
+    if (allEventsSatisfied || stateValuesReady) {
       readyRef.current = true;
       dispatch({ type: ACTION_TYPES.SET_READY, payload: true });
       onReady?.();
