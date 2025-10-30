@@ -29,6 +29,7 @@ The `useUbidotsActions` hook returns an object containing all available actions 
 ### Dashboard Actions
 
 - `refreshDashboard()` - Refresh the entire dashboard
+- `setDashboardLayer(layerId: string)` - Switch to a specific dashboard layer
 - `setFullScreen(setting: 'toggle' | 'enable' | 'disabled')` - Control fullscreen mode
 
 ### UI Actions
@@ -186,11 +187,16 @@ function RealTimeToggle() {
 import { useUbidotsActions } from '@ubidots/react-html-canvas';
 
 function DashboardControls() {
-  const { refreshDashboard, setFullScreen } = useUbidotsActions();
+  const { refreshDashboard, setFullScreen, setDashboardLayer } =
+    useUbidotsActions();
 
   return (
     <div>
       <button onClick={refreshDashboard}>🔄 Refresh Dashboard</button>
+
+      <button onClick={() => setDashboardLayer('layer-id')}>
+        📊 Switch to Layer
+      </button>
 
       <button onClick={() => setFullScreen('toggle')}>
         🔄 Toggle Fullscreen

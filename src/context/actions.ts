@@ -45,6 +45,9 @@ const actionCreators = {
   setDashboardDateRange: (range: DateRange) =>
     postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_DATE_RANGE, range),
 
+  setDashboardLayer: (layerId: string) =>
+    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_LAYER, layerId),
+
   setRealTime: (rt: boolean) => postMessage(OUTBOUND_EVENTS.SET_REAL_TIME, rt),
 
   refreshDashboard: () => postMessage(OUTBOUND_EVENTS.REFRESH_DASHBOARD),
