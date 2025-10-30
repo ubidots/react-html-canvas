@@ -29,7 +29,7 @@ The `useUbidotsActions` hook returns an object containing all available actions 
 ### Dashboard Actions
 
 - `refreshDashboard()` - Refresh the entire dashboard
-- `setFullScreen(setting: 'toggle' | 'enable' | 'disabled')` - Control fullscreen mode
+- `setFullScreen(setting: 'toggle' | 'enable' | 'disable')` - Control fullscreen mode
 
 ### UI Actions
 
@@ -200,7 +200,7 @@ function DashboardControls() {
         📺 Enter Fullscreen
       </button>
 
-      <button onClick={() => setFullScreen('disabled')}>
+      <button onClick={() => setFullScreen('disable')}>
         🪟 Exit Fullscreen
       </button>
     </div>

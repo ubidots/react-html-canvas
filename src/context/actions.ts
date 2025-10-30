@@ -55,7 +55,7 @@ const actionCreators = {
       id: 'react-widget',
     }),
 
-  setFullScreen: (setting: 'toggle' | 'enable' | 'disabled') =>
+  setFullScreen: (setting: 'toggle' | 'enable' | 'disable') =>
     postMessage(OUTBOUND_EVENTS.SET_FULL_SCREEN, setting),
 };
 

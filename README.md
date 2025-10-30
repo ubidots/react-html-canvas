@@ -81,7 +81,7 @@ export default function App() {
   - setRealTime(rt: boolean)
   - refreshDashboard()
   - openDrawer({ url: string; width: number })
-  - setFullScreen('toggle' | 'enable' | 'disabled')
+  - setFullScreen('toggle' | 'enable' | 'disable')
   - getHeaders(): { Authorization | X-Auth-Token, Content-type }
 
 ## Examples & Documentation
