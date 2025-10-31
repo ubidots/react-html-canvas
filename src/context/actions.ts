@@ -33,6 +33,36 @@ function generateHeaders(
 }
 
 /**
+ * Validate date range to ensure startTime is before endTime
+ */
+function validateDateRange(range: DateRange): boolean {
+  if (!range || typeof range !== 'object') {
+    console.error(
+      '[setDashboardDateRange] Invalid date range: must be an object'
+    );
+    return false;
+  }
+
+  const { startTime, endTime } = range;
+
+  if (typeof startTime !== 'number' || typeof endTime !== 'number') {
+    console.error(
+      '[setDashboardDateRange] Invalid date range: startTime and endTime must be numbers'
+    );
+    return false;
+  }
+
+  if (startTime >= endTime) {
+    console.error(
+      `[setDashboardDateRange] Invalid date range: startTime (${new Date(startTime).toISOString()}) must be before endTime (${new Date(endTime).toISOString()})`
+    );
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Action creators using object mapping
  */
 const actionCreators = {
@@ -42,8 +72,10 @@ const actionCreators = {
   setDashboardMultipleDevices: (deviceIds: string[]) =>
     postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_MULTIPLE_DEVICES, deviceIds),
 
-  setDashboardDateRange: (range: DateRange) =>
-    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_DATE_RANGE, range),
+  setDashboardDateRange: (range: DateRange) => {
+    if (!validateDateRange(range)) return;
+    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_DATE_RANGE, range);
+  },
 
   setDashboardLayer: (layerId: string) =>
     postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_LAYER, layerId),
