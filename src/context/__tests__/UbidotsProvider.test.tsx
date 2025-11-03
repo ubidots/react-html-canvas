@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { UbidotsProvider } from '../ubidots';
 import { useUbidotsReady, useUbidotsSelectedDevice } from '@/hooks';
@@ -27,18 +27,20 @@ describe('UbidotsProvider', () => {
       </UbidotsProvider>
     );
 
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: { event: 'receivedToken', payload: 'T' },
-        origin: 'http://localhost',
-      })
-    );
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: { event: 'selectedDevice', payload: 'd1' },
-        origin: 'http://localhost',
-      })
-    );
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { event: 'receivedToken', payload: 'T' },
+          origin: 'http://localhost',
+        })
+      );
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { event: 'selectedDevice', payload: 'd1' },
+          origin: 'http://localhost',
+        })
+      );
+    });
 
     await waitFor(() =>
       expect(screen.getByTestId('ready').textContent).toBe('true')
@@ -55,36 +57,38 @@ describe('UbidotsProvider', () => {
       </UbidotsProvider>
     );
 
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: { event: 'receivedJWTToken', payload: 'jwt-token' },
-        origin: 'http://localhost',
-      })
-    );
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: { event: 'selectedDevice', payload: { id: 'd1' } },
-        origin: 'http://localhost',
-      })
-    );
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: {
-          event: 'selectedDashboardDateRange',
-          payload: { startTime: 1000, endTime: 2000 },
-        },
-        origin: 'http://localhost',
-      })
-    );
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: {
-          event: 'selectedDashboardObject',
-          payload: { id: 'dashboard-1', name: 'Test Dashboard' },
-        },
-        origin: 'http://localhost',
-      })
-    );
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { event: 'receivedJWTToken', payload: 'jwt-token' },
+          origin: 'http://localhost',
+        })
+      );
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { event: 'selectedDevice', payload: 'd1' },
+          origin: 'http://localhost',
+        })
+      );
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: {
+            event: 'selectedDashboardDateRange',
+            payload: { startTime: 1000, endTime: 2000 },
+          },
+          origin: 'http://localhost',
+        })
+      );
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: {
+            event: 'selectedDashboardObject',
+            payload: { id: 'dashboard-1', name: 'Test Dashboard' },
+          },
+          origin: 'http://localhost',
+        })
+      );
+    });
 
     await waitFor(() =>
       expect(screen.getByTestId('ready').textContent).toBe('true')
@@ -101,36 +105,38 @@ describe('UbidotsProvider', () => {
       </UbidotsProvider>
     );
 
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: { event: 'receivedToken', payload: 'regular-token' },
-        origin: 'http://localhost',
-      })
-    );
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: { event: 'selectedDevice', payload: { id: 'd2' } },
-        origin: 'http://localhost',
-      })
-    );
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: {
-          event: 'selectedDashboardDateRange',
-          payload: { startTime: 1000, endTime: 2000 },
-        },
-        origin: 'http://localhost',
-      })
-    );
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: {
-          event: 'selectedDashboardObject',
-          payload: { id: 'dashboard-2' },
-        },
-        origin: 'http://localhost',
-      })
-    );
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { event: 'receivedToken', payload: 'regular-token' },
+          origin: 'http://localhost',
+        })
+      );
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { event: 'selectedDevice', payload: 'd2' },
+          origin: 'http://localhost',
+        })
+      );
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: {
+            event: 'selectedDashboardDateRange',
+            payload: { startTime: 1000, endTime: 2000 },
+          },
+          origin: 'http://localhost',
+        })
+      );
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: {
+            event: 'selectedDashboardObject',
+            payload: { id: 'dashboard-2' },
+          },
+          origin: 'http://localhost',
+        })
+      );
+    });
 
     await waitFor(() =>
       expect(screen.getByTestId('ready').textContent).toBe('true')
@@ -147,18 +153,20 @@ describe('UbidotsProvider', () => {
       </UbidotsProvider>
     );
 
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: { event: 'receivedJWTToken', payload: 'jwt-token' },
-        origin: 'http://localhost',
-      })
-    );
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: { event: 'selectedDevice', payload: { id: 'd1' } },
-        origin: 'http://localhost',
-      })
-    );
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { event: 'receivedJWTToken', payload: 'jwt-token' },
+          origin: 'http://localhost',
+        })
+      );
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { event: 'selectedDevice', payload: 'd1' },
+          origin: 'http://localhost',
+        })
+      );
+    });
 
     await new Promise(resolve => setTimeout(resolve, 100));
     expect(screen.getByTestId('ready').textContent).toBe('false');
