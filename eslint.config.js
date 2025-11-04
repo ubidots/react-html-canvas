@@ -50,7 +50,7 @@ export default tseslint.config(
       'react/prop-types': 'off', // Using TypeScript for prop validation
       'react/jsx-uses-react': 'off', // Not needed in React 17+
       'react/jsx-uses-vars': 'error',
-      'no-console': 'warn',
+      'no-console': ['error', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
