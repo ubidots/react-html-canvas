@@ -31,7 +31,7 @@ export function useUbidotsAPI(): UbidotsJSClient | null {
       clientRef.current.Auth.authenticate(token);
       setIsAuthenticated(true);
     }
-  }, [clientRef.current, token, isLoading, isAuthenticated]);
+  }, [token, isLoading, isAuthenticated]);
 
   if (!isAuthenticated || !clientRef.current) return null;
   return clientRef.current;
