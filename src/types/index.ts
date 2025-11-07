@@ -82,7 +82,7 @@ export interface OutboundActions {
   setRealTime: (rt: boolean) => void;
   refreshDashboard: () => void;
   openDrawer: (opts: { url: string; width: number }) => void;
-  setFullScreen: (setting: 'toggle' | 'enable' | 'disabled') => void;
+  setFullScreen: (setting: 'toggle' | 'enable' | 'disable') => void;
   getHeaders: () => Record<string, string>;
 }
 

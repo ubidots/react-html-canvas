@@ -266,7 +266,7 @@ function ActionsPanel() {
         </button>
         <button
           className='button button-primary'
-          onClick={() => actions.setFullScreen('disabled')}
+          onClick={() => actions.setFullScreen('disable')}
         >
           🪟 Disable Fullscreen
         </button>
