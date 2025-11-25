@@ -31,11 +31,12 @@ export default defineConfig({
       formats: ['es', 'cjs', 'umd'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', '@ubidots/ubidots-javascript-library'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
+          '@ubidots/ubidots-javascript-library': 'UbidotsJS',
         },
       },
     },
