@@ -90,7 +90,7 @@ jobs:
           git push origin ${{ steps.version.outputs.version }}
 
       - name: Publish to NPM with provenance
-        run: pnpm publish --access public --tag ${{ steps.version.outputs.tag }} --no-git-checks --provenance
+        run: npm publish --access public --tag ${{ steps.version.outputs.tag }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
