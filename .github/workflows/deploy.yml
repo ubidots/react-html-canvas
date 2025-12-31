@@ -17,6 +17,10 @@ on:
         required: false
         type: string
 
+permissions:
+  id-token: write
+  contents: write
+
 jobs:
   deploy:
     name: Deploy to NPM
@@ -86,10 +90,8 @@ jobs:
           git push origin main
           git push origin ${{ steps.version.outputs.version }}
 
-      - name: Publish to NPM
-        run: pnpm publish --access public --tag ${{ steps.version.outputs.tag }} --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to NPM with provenance
+        run: pnpm publish --access public --tag ${{ steps.version.outputs.tag }} --no-git-checks --provenance
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
