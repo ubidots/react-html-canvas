@@ -47,6 +47,7 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -89,7 +90,7 @@ jobs:
           git push origin main
           git push origin ${{ steps.version.outputs.version }}
 
-      - name: Publish to NPM with provenance
+      - name: Publish to NPM
         run: npm publish --access public --tag ${{ steps.version.outputs.tag }}
 
       - name: Create GitHub Release
