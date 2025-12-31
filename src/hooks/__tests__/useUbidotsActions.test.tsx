@@ -79,13 +79,15 @@ describe('useUbidotsActions', () => {
         );
 
         React.useEffect(() => {
-          window.postMessage(
-            { event: 'receivedJWTToken', payload: 'jwt-token-123' },
-            '*'
-          );
-          setTimeout(() => {
+          const sendMessage = async () => {
+            window.postMessage(
+              { event: 'receivedJWTToken', payload: 'jwt-token-123' },
+              '*'
+            );
+            await new Promise(resolve => setTimeout(resolve, 50));
             setHeaders(actions.getHeaders());
-          }, 50);
+          };
+          sendMessage();
         }, [actions]);
 
         return (
@@ -113,13 +115,15 @@ describe('useUbidotsActions', () => {
         );
 
         React.useEffect(() => {
-          window.postMessage(
-            { event: 'receivedToken', payload: 'regular-token-456' },
-            '*'
-          );
-          setTimeout(() => {
+          const sendMessage = async () => {
+            window.postMessage(
+              { event: 'receivedToken', payload: 'regular-token-456' },
+              '*'
+            );
+            await new Promise(resolve => setTimeout(resolve, 50));
             setHeaders(actions.getHeaders());
-          }, 50);
+          };
+          sendMessage();
         }, [actions]);
 
         return (
