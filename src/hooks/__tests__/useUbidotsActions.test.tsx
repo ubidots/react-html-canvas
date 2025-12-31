@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { UbidotsProvider } from '@/context/ubidots';
 import { useUbidotsActions } from '@/hooks';
@@ -71,7 +71,7 @@ describe('useUbidotsActions', () => {
   });
 
   describe('getHeaders', () => {
-    it('returns JWT headers when JWT token is provided', () => {
+    it('returns JWT headers when JWT token is provided', async () => {
       function HeadersProbe() {
         const actions = useUbidotsActions();
         const [headers, setHeaders] = React.useState<Record<string, string>>(
@@ -99,13 +99,13 @@ describe('useUbidotsActions', () => {
         </UbidotsProvider>
       );
 
-      setTimeout(() => {
+      await waitFor(() => {
         const authHeader = screen.getByTestId('auth-header');
         expect(authHeader.textContent).toContain('Bearer');
-      }, 100);
+      });
     });
 
-    it('returns X-Auth-Token headers when regular token is provided', () => {
+    it('returns X-Auth-Token headers when regular token is provided', async () => {
       function HeadersProbe() {
         const actions = useUbidotsActions();
         const [headers, setHeaders] = React.useState<Record<string, string>>(
@@ -135,10 +135,10 @@ describe('useUbidotsActions', () => {
         </UbidotsProvider>
       );
 
-      setTimeout(() => {
+      await waitFor(() => {
         const authHeader = screen.getByTestId('auth-header');
         expect(authHeader.textContent).toBe('regular-token-456');
-      }, 100);
+      });
     });
   });
 
