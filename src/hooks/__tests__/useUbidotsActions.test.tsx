@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { UbidotsProvider } from '@/context/ubidots';
 import { useUbidotsActions } from '@/hooks';
@@ -67,6 +67,140 @@ describe('useUbidotsActions', () => {
         }),
         '*'
       );
+    });
+  });
+
+  describe('getHeaders', () => {
+    it('returns JWT headers when JWT token is provided', async () => {
+      function HeadersProbe() {
+        const actions = useUbidotsActions();
+        const [headers, setHeaders] = React.useState<Record<string, string>>(
+          {}
+        );
+
+        React.useEffect(() => {
+          window.postMessage(
+            { event: 'receivedJWTToken', payload: 'jwt-token-123' },
+            '*'
+          );
+          setTimeout(() => {
+            setHeaders(actions.getHeaders());
+          }, 50);
+        }, [actions]);
+
+        return (
+          <div data-testid='auth-header'>{headers.Authorization || 'none'}</div>
+        );
+      }
+
+      render(
+        <UbidotsProvider>
+          <HeadersProbe />
+        </UbidotsProvider>
+      );
+
+      await waitFor(() => {
+        const authHeader = screen.getByTestId('auth-header');
+        expect(authHeader.textContent).toContain('Bearer');
+      });
+    });
+
+    it('returns X-Auth-Token headers when regular token is provided', async () => {
+      function HeadersProbe() {
+        const actions = useUbidotsActions();
+        const [headers, setHeaders] = React.useState<Record<string, string>>(
+          {}
+        );
+
+        React.useEffect(() => {
+          window.postMessage(
+            { event: 'receivedToken', payload: 'regular-token-456' },
+            '*'
+          );
+          setTimeout(() => {
+            setHeaders(actions.getHeaders());
+          }, 50);
+        }, [actions]);
+
+        return (
+          <div data-testid='auth-header'>
+            {headers['X-Auth-Token'] || 'none'}
+          </div>
+        );
+      }
+
+      render(
+        <UbidotsProvider>
+          <HeadersProbe />
+        </UbidotsProvider>
+      );
+
+      await waitFor(() => {
+        const authHeader = screen.getByTestId('auth-header');
+        expect(authHeader.textContent).toBe('regular-token-456');
+      });
+    });
+  });
+
+  describe('setDashboardDateRange validation', () => {
+    it('allows valid date range with startTime before endTime', () => {
+      const postSpy = vi.spyOn(window.parent, 'postMessage');
+
+      function DateRangeTest() {
+        const actions = useUbidotsActions();
+        React.useEffect(() => {
+          actions.setDashboardDateRange({ startTime: 1000, endTime: 2000 });
+        }, [actions]);
+        return null;
+      }
+
+      render(
+        <UbidotsProvider>
+          <DateRangeTest />
+        </UbidotsProvider>
+      );
+
+      expect(postSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          event: 'setDashboardDateRange',
+          payload: { startTime: 1000, endTime: 2000 },
+        }),
+        '*'
+      );
+
+      postSpy.mockRestore();
+    });
+
+    it('rejects invalid date range when startTime >= endTime', () => {
+      const postSpy = vi.spyOn(window.parent, 'postMessage');
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      function InvalidDateRangeTest() {
+        const actions = useUbidotsActions();
+        React.useEffect(() => {
+          actions.setDashboardDateRange({ startTime: 2000, endTime: 1000 });
+        }, [actions]);
+        return null;
+      }
+
+      render(
+        <UbidotsProvider>
+          <InvalidDateRangeTest />
+        </UbidotsProvider>
+      );
+
+      const setDashboardCalls = postSpy.mock.calls.filter(
+        call => call[0]?.event === 'setDashboardDateRange'
+      );
+      expect(setDashboardCalls.length).toBe(0);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('startTime')
+      );
+
+      postSpy.mockRestore();
+      consoleSpy.mockRestore();
     });
   });
 });
