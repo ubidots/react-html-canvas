@@ -184,34 +184,48 @@ Runs on every PR and push to main/develop branches:
 
 #### Deployment Pipeline (`.github/workflows/deploy.yml`)
 
-Manual deployment workflow with the following features:
+Automated deployment workflow triggered when version changes are merged to main:
 
-- **Manual Trigger**: Only runs when manually triggered from GitHub Actions
-- **Version Selection**: Choose patch, minor, or major version bump
-- **Pre-release Support**: Optional tag for beta/alpha releases
-- **Quality Checks**: Full linting, testing, and build verification
-- **Automated Versioning**: Bumps version and creates git tags
-- **NPM Publishing**: Publishes to NPM with appropriate tags
+- **Automatic Trigger**: Runs when package.json changes are pushed to main
+- **Version Validation**: Docker-based validation ensures semantic version increments
+- **Pre-release Detection**: Auto-detects pre-release tags from version format
+- **Quality Checks**: Full linting, testing, and build verification before publish
+- **NPM Publishing**: Uses OIDC trusted publishing with provenance attestation
 - **GitHub Release**: Creates release with installation instructions
 
 ### How to Deploy
 
 To deploy a new version:
 
-1. Go to the **Actions** tab in GitHub
-2. Select the **Deploy** workflow
-3. Click **Run workflow**
-4. Choose the version bump type (patch/minor/major)
-5. Optionally add a pre-release tag (e.g., "beta")
-6. Click **Run workflow**
+1. **Update version in your PR**:
+   ```bash
+   # For stable releases
+   npm version patch  # or minor, major
 
-The deployment will:
+   # For pre-releases
+   npm version prerelease --preid=beta
+   ```
 
-- Run all quality checks
-- Bump the version in package.json
-- Create a git tag
-- Publish to NPM
-- Create a GitHub release
+2. **Commit and create PR**:
+   ```bash
+   git add package.json
+   git commit -m "chore: bump version to vX.Y.Z"
+   git push
+   ```
+
+3. **Merge to main**:
+   - Ensure all PR checks pass
+   - Merge the PR
+
+4. **Automatic deployment**:
+   - Workflow automatically publishes to npm
+   - GitHub release created automatically
+
+#### Version Formats
+
+- `1.0.0` → npm tag: `latest`
+- `1.0.0-beta.1` → npm tag: `beta`
+- `1.0.0-alpha.1` → npm tag: `alpha`
 
 ## License
 

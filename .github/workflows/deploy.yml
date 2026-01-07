@@ -1,21 +1,11 @@
 name: Deploy
 
 on:
-  workflow_dispatch:
-    inputs:
-      version_type:
-        description: 'Version bump type'
-        required: true
-        default: 'patch'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
-      tag:
-        description: 'Tag for pre-release (e.g., beta, alpha)'
-        required: false
-        type: string
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
 
 permissions:
   id-token: write
@@ -34,8 +24,55 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 2
+
+      - name: Validate version increment
+        id: version_check
+        uses: docker://node:22-alpine
+        with:
+          entrypoint: /bin/sh
+          args: -c "
+            apk add --no-cache git &&
+            CURRENT_VERSION=$(node -p \"require('./package.json').version\") &&
+            git checkout HEAD~1 -- package.json 2>/dev/null &&
+            PREVIOUS_VERSION=$(node -p \"require('./package.json').version\") || PREVIOUS_VERSION=\"0.0.0\" &&
+            git checkout HEAD -- package.json &&
+            echo \"current=$CURRENT_VERSION\" >> $GITHUB_OUTPUT &&
+            echo \"previous=$PREVIOUS_VERSION\" >> $GITHUB_OUTPUT &&
+            if [ \"$CURRENT_VERSION\" = \"$PREVIOUS_VERSION\" ]; then
+              echo \"❌ Version not changed (still $CURRENT_VERSION)\" &&
+              exit 1
+            fi &&
+            npx --yes semver $CURRENT_VERSION -r \">$PREVIOUS_VERSION\" &&
+            echo \"✅ Valid version increment: $PREVIOUS_VERSION → $CURRENT_VERSION\"
+            "
+
+      - name: Parse version and determine tag
+        id: version
+        run: |
+          VERSION="${{ steps.version_check.outputs.current }}"
+
+          # Extract pre-release tag if present
+          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # Stable version (e.g., "1.0.0")
+            TAG="latest"
+            IS_PRERELEASE="false"
+          elif [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-([a-zA-Z]+) ]]; then
+            # Pre-release version (e.g., "1.0.0-beta.1")
+            TAG="${BASH_REMATCH[1]}"
+            IS_PRERELEASE="true"
+          else
+            echo "❌ Invalid version format: $VERSION"
+            exit 1
+          fi
+
+          echo "version=v$VERSION" >> $GITHUB_OUTPUT
+          echo "version_number=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+
+          echo "📦 Version: $VERSION"
+          echo "🏷️  NPM Tag: $TAG"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -47,6 +84,7 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -60,34 +98,6 @@ jobs:
 
       - name: Build library
         run: pnpm run build
-
-      - name: Configure Git
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-
-      - name: Bump version
-        id: version
-        run: |
-          if [ -n "${{ inputs.tag }}" ]; then
-            # Pre-release version
-            NEW_VERSION=$(npm version pre${{ inputs.version_type }} --preid=${{ inputs.tag }} --no-git-tag-version)
-            echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
-          else
-            # Regular version
-            NEW_VERSION=$(npm version ${{ inputs.version_type }} --no-git-tag-version)
-            echo "tag=latest" >> $GITHUB_OUTPUT
-          fi
-          echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
-          echo "New version: ${NEW_VERSION}"
-
-      - name: Commit version bump
-        run: |
-          git add package.json
-          git commit -m "chore: bump version to ${{ steps.version.outputs.version }}"
-          git tag ${{ steps.version.outputs.version }}
-          git push origin main
-          git push origin ${{ steps.version.outputs.version }}
 
       - name: Publish to NPM
         run: npm publish --access public --tag ${{ steps.version.outputs.tag }} --provenance
@@ -105,20 +115,20 @@ jobs:
             ## 📦 Installation
 
             ```bash
-            npm install @ubidots/react-html-canvas@${{ steps.version.outputs.version }}
+            npm install @ubidots/react-html-canvas@${{ steps.version.outputs.version_number }}
             # or
-            pnpm add @ubidots/react-html-canvas@${{ steps.version.outputs.version }}
+            pnpm add @ubidots/react-html-canvas@${{ steps.version.outputs.version_number }}
             ```
 
             ## 🔗 Links
-            - [NPM Package](https://www.npmjs.com/package/@ubidots/react-html-canvas)
+            - [NPM Package](https://www.npmjs.com/package/@ubidots/react-html-canvas/v/${{ steps.version.outputs.version_number }})
             - [Documentation](https://github.com/ubidots/react-html-canvas#readme)
           draft: false
-          prerelease: ${{ inputs.tag != '' }}
+          prerelease: ${{ steps.version.outputs.prerelease }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deployment Summary
         run: |
           echo "✅ Successfully deployed ${{ steps.version.outputs.version }} to NPM"
-          echo "📦 Package: https://www.npmjs.com/package/@ubidots/react-html-canvas"
-          echo "🏷️ Tag: ${{ steps.version.outputs.tag }}"
+          echo "📦 Package: https://www.npmjs.com/package/@ubidots/react-html-canvas/v/${{ steps.version.outputs.version_number }}"
+          echo "🏷️  Tag: ${{ steps.version.outputs.tag }}"
