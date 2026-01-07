@@ -197,6 +197,7 @@ Automated deployment workflow triggered when version changes are merged to main:
 To deploy a new version:
 
 1. **Update version in your PR**:
+
    ```bash
    # For stable releases
    npm version patch  # or minor, major
@@ -206,6 +207,7 @@ To deploy a new version:
    ```
 
 2. **Commit and create PR**:
+
    ```bash
    git add package.json
    git commit -m "chore: bump version to vX.Y.Z"
