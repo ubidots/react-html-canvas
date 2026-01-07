@@ -187,7 +187,6 @@ Runs on every PR and push to main/develop branches:
 Automated deployment workflow triggered when version changes are merged to main:
 
 - **Automatic Trigger**: Runs when package.json changes are pushed to main
-- **Version Validation**: Docker-based validation ensures semantic version increments
 - **Pre-release Detection**: Auto-detects pre-release tags from version format
 - **Quality Checks**: Full linting, testing, and build verification before publish
 - **NPM Publishing**: Uses OIDC trusted publishing with provenance attestation

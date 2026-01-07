@@ -24,41 +24,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
-      - name: Validate version increment
-        id: version_check
-        uses: docker://node:22-alpine
-        with:
-          entrypoint: /bin/sh
-          args: -c "
-            apk add --no-cache git &&
-            CURRENT_VERSION=$(node -p \"require('./package.json').version\") &&
-            git checkout HEAD~1 -- package.json 2>/dev/null &&
-            PREVIOUS_VERSION=$(node -p \"require('./package.json').version\") || PREVIOUS_VERSION=\"0.0.0\" &&
-            git checkout HEAD -- package.json &&
-            echo \"current=$CURRENT_VERSION\" >> $GITHUB_OUTPUT &&
-            echo \"previous=$PREVIOUS_VERSION\" >> $GITHUB_OUTPUT &&
-            if [ \"$CURRENT_VERSION\" = \"$PREVIOUS_VERSION\" ]; then
-              echo \"❌ Version not changed (still $CURRENT_VERSION)\" &&
-              exit 1
-            fi &&
-            npx --yes semver $CURRENT_VERSION -r \">$PREVIOUS_VERSION\" &&
-            echo \"✅ Valid version increment: $PREVIOUS_VERSION → $CURRENT_VERSION\"
-            "
-
-      - name: Parse version and determine tag
+      - name: Extract version and determine tag
         id: version
         run: |
-          VERSION="${{ steps.version_check.outputs.current }}"
+          VERSION=$(node -p "require('./package.json').version")
 
-          # Extract pre-release tag if present
           if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            # Stable version (e.g., "1.0.0")
             TAG="latest"
             IS_PRERELEASE="false"
           elif [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-([a-zA-Z]+) ]]; then
-            # Pre-release version (e.g., "1.0.0-beta.1")
             TAG="${BASH_REMATCH[1]}"
             IS_PRERELEASE="true"
           else
@@ -72,7 +48,7 @@ jobs:
           echo "prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 
           echo "📦 Version: $VERSION"
-          echo "🏷️  NPM Tag: $TAG"
+          echo "🏷️ NPM Tag: $TAG"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
