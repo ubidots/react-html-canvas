@@ -6,6 +6,7 @@ import {
   useUbidotsSelectedDevices,
   useUbidotsActions,
 } from '@ubidots/react-html-canvas';
+import { EventEmitterPanel } from '../shared/EventEmitterPanel';
 import './styles.css';
 
 function DeviceCard({ device, isSelected, onSelect }) {
@@ -233,6 +234,7 @@ export function DeviceSelectorExample() {
           <p>Interactive device selection with single and multi-select modes</p>
         </header>
         <DeviceSelector />
+        <EventEmitterPanel />
       </div>
     </UbidotsProvider>
   );

@@ -24,6 +24,18 @@ Complete example demonstrating all available functionalities.
 
 Examples using Higher-Order Components to inject props.
 
+### 6. **event-versioning** - Event Versioning
+
+Demonstrates V1 and V2 event compatibility and automatic event emission.
+
+### 7. **widget-events-basic** - Widget Events (Basic)
+
+Shows how to use widget-specific events with the `v2:widget:<event>:<widgetId>` pattern. Demonstrates event emission, monitoring, and lifecycle events.
+
+### 8. **widget-events-multi** - Widget Events (Multi-Widget)
+
+Advanced example showing multiple widgets on the same page with isolated event namespaces and inter-widget communication.
+
 ## How to Use Examples
 
 Each example is an independent React component that you can copy and adapt to your project.
