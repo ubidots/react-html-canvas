@@ -18,7 +18,7 @@ import type { UbidotsState, UbidotsActions, ReadyEvent } from '@/types';
 import { initialState, ubidotsReducer } from './UbidotsReducer';
 import { handleInboundMessage, checkReadyState } from './messageHandlers';
 import { createActions } from './actions';
-import { DEFAULT_READY_EVENTS } from './constants';
+import { ACTION_TYPES, DEFAULT_READY_EVENTS } from './constants';
 
 export interface UbidotsContextValue {
   state: UbidotsState;
@@ -50,6 +50,7 @@ export interface UbidotsProviderProps {
   readyEvents?: ReadyEvent[];
   validateOrigin?: (origin: string) => boolean;
   initialStateOverride?: Partial<typeof initialState>;
+  widgetId?: string;
 }
 
 export function UbidotsProvider({
@@ -58,6 +59,7 @@ export function UbidotsProvider({
   readyEvents = DEFAULT_READY_EVENTS,
   validateOrigin,
   initialStateOverride,
+  widgetId,
 }: UbidotsProviderProps) {
   const [state, dispatch] = useReducer(ubidotsReducer, {
     ...initialState,
@@ -65,6 +67,14 @@ export function UbidotsProvider({
   });
   const readyRef = useRef(false);
   const satisfiedEventsRef = useRef(new Set<ReadyEvent>());
+
+  // Set widgetId on window and in state
+  useEffect(() => {
+    if (widgetId) {
+      (window as unknown as Record<string, unknown>).widgetId = widgetId;
+      dispatch({ type: ACTION_TYPES.SET_WIDGET_ID, payload: widgetId });
+    }
+  }, [widgetId]);
 
   const isOriginValid = useCallback(
     (origin: string) => (validateOrigin ? validateOrigin(origin) : true),

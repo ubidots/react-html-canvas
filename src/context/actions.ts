@@ -1,5 +1,5 @@
 import type { DateRange, OutboundActions } from '@/types';
-import { OUTBOUND_EVENTS } from './constants';
+import { OUTBOUND_EVENTS, OUTBOUND_EVENTS_V2 } from './constants';
 
 /**
  * Post message to parent window
@@ -8,6 +8,18 @@ function postMessage(event: string, payload?: unknown): void {
   if (typeof window !== 'undefined' && window.parent) {
     window.parent.postMessage({ event, payload }, '*');
   }
+}
+
+/**
+ * Post both V1 and V2 events to parent window
+ */
+function postMessageWithV2(
+  eventV1: string,
+  eventV2: string,
+  payload?: unknown
+): void {
+  postMessage(eventV1, payload);
+  postMessage(eventV2, payload);
 }
 
 /**
@@ -64,36 +76,65 @@ function validateDateRange(range: DateRange): boolean {
 
 /**
  * Action creators using object mapping
+ * Each action emits both V1 and V2 events for backward compatibility
  */
 const actionCreators = {
-  setDashboardDevice: (deviceId: string) =>
-    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_DEVICE, deviceId),
+  setDashboardDevice: (deviceId: string) => {
+    // Convert single device to array for V2
+    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_DEVICE, deviceId);
+    postMessage(OUTBOUND_EVENTS_V2.SET_DASHBOARD_DEVICE, [{ id: deviceId }]);
+  },
 
-  setDashboardMultipleDevices: (deviceIds: string[]) =>
-    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_MULTIPLE_DEVICES, deviceIds),
+  setDashboardMultipleDevices: (deviceIds: string[]) => {
+    // Convert string array to Device array for V2
+    const devices = deviceIds.map(id => ({ id }));
+    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_MULTIPLE_DEVICES, deviceIds);
+    postMessage(OUTBOUND_EVENTS_V2.SET_DASHBOARD_MULTIPLE_DEVICES, devices);
+  },
 
   setDashboardDateRange: (range: DateRange) => {
     if (!validateDateRange(range)) return;
-    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_DATE_RANGE, range);
+    postMessageWithV2(
+      OUTBOUND_EVENTS.SET_DASHBOARD_DATE_RANGE,
+      OUTBOUND_EVENTS_V2.SET_DASHBOARD_DATE_RANGE,
+      range
+    );
   },
 
-  setDashboardLayer: (layerId: string) =>
-    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_LAYER, layerId),
+  setDashboardLayer: (layerId: string) => {
+    // V2 doesn't have a direct equivalent for layer
+    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_LAYER, layerId);
+  },
 
-  setRealTime: (rt: boolean) => postMessage(OUTBOUND_EVENTS.SET_REAL_TIME, rt),
+  setRealTime: (rt: boolean) =>
+    postMessageWithV2(
+      OUTBOUND_EVENTS.SET_REAL_TIME,
+      OUTBOUND_EVENTS_V2.SET_REAL_TIME,
+      rt
+    ),
 
-  refreshDashboard: () => postMessage(OUTBOUND_EVENTS.REFRESH_DASHBOARD),
+  refreshDashboard: () =>
+    postMessageWithV2(
+      OUTBOUND_EVENTS.REFRESH_DASHBOARD,
+      OUTBOUND_EVENTS_V2.REFRESH_DASHBOARD
+    ),
 
   openDrawer: (opts: { url: string; width: number }) => {
     const id =
       typeof window !== 'undefined'
         ? (window as unknown as Record<string, unknown>).widgetId
         : 'react-widget';
-    postMessage(OUTBOUND_EVENTS.OPEN_DRAWER, { drawerInfo: opts, id });
+    const payload = { drawerInfo: opts, id };
+    postMessage(OUTBOUND_EVENTS.OPEN_DRAWER, payload);
+    postMessage(OUTBOUND_EVENTS_V2.OPEN_DRAWER, payload);
   },
 
   setFullScreen: (setting: 'toggle' | 'enable' | 'disable') =>
-    postMessage(OUTBOUND_EVENTS.SET_FULL_SCREEN, setting),
+    postMessageWithV2(
+      OUTBOUND_EVENTS.SET_FULL_SCREEN,
+      OUTBOUND_EVENTS_V2.SET_FULL_SCREEN,
+      setting
+    ),
 };
 
 /**
