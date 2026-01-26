@@ -23,6 +23,7 @@
     "build": "vite build",
     "build:watch": "vite build --watch",
     "dev": "vite",
+    "dev:examples": "vite --config vite.examples.config.ts",
     "serve": "python3 -m http.server 8080 --directory dist",
     "serve:tunnel": "pnpm run serve & cloudflared tunnel --url http://localhost:8080",
     "dev:cdn": "concurrently \"pnpm run build:watch\" \"pnpm run serve\"",

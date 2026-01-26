@@ -9,7 +9,17 @@ import type {
   FilterValue,
   ReadyEvent,
 } from '@/types';
-import { INBOUND_EVENTS, ACTION_TYPES } from './constants';
+import { INBOUND_EVENTS, INBOUND_EVENTS_V2, ACTION_TYPES } from './constants';
+
+/**
+ * Post V2 event to parent window
+ * This is used to emit V2 events when V1 events are processed
+ */
+function emitV2Event(event: string, payload?: unknown): void {
+  if (typeof window !== 'undefined' && window.parent) {
+    window.parent.postMessage({ event, payload }, '*');
+  }
+}
 
 /**
  * Message handler function type
@@ -24,9 +34,12 @@ type MessageHandler = (
  * Individual message handlers
  */
 const messageHandlers: Record<string, MessageHandler> = {
+  // ==================== V1 Auth Events ====================
   [INBOUND_EVENTS.RECEIVED_TOKEN]: (payload, dispatch, satisfiedEventsRef) => {
     dispatch({ type: ACTION_TYPES.RECEIVED_TOKEN, payload: payload as string });
     satisfiedEventsRef.current.add('receivedToken');
+    // Emit V2 event
+    emitV2Event(INBOUND_EVENTS_V2.TOKEN, payload);
   },
 
   [INBOUND_EVENTS.RECEIVED_JWT_TOKEN]: (
@@ -39,8 +52,11 @@ const messageHandlers: Record<string, MessageHandler> = {
       payload: payload as string,
     });
     satisfiedEventsRef.current.add('receivedJWTToken');
+    // Emit V2 event
+    emitV2Event(INBOUND_EVENTS_V2.JWT, payload);
   },
 
+  // ==================== V1 Dashboard Events ====================
   [INBOUND_EVENTS.SELECTED_DEVICE]: (payload, dispatch, satisfiedEventsRef) => {
     let validatedPayload: Device | null = null;
     if (typeof payload === 'string') {
@@ -50,6 +66,10 @@ const messageHandlers: Record<string, MessageHandler> = {
 
     dispatch({ type: ACTION_TYPES.SELECTED_DEVICE, payload: validatedPayload });
     satisfiedEventsRef.current.add('selectedDevice');
+    // Emit V2 event - convert single device to array format
+    if (validatedPayload) {
+      emitV2Event(INBOUND_EVENTS_V2.SELECTED_DEVICES, [validatedPayload]);
+    }
   },
 
   [INBOUND_EVENTS.SELECTED_DEVICES]: (
@@ -62,6 +82,8 @@ const messageHandlers: Record<string, MessageHandler> = {
       payload: payload as Device[] | null,
     });
     satisfiedEventsRef.current.add('selectedDevices');
+    // Emit V2 event
+    emitV2Event(INBOUND_EVENTS_V2.SELECTED_DEVICES, payload);
   },
 
   [INBOUND_EVENTS.SELECTED_DASHBOARD_DATE_RANGE]: (
@@ -74,6 +96,8 @@ const messageHandlers: Record<string, MessageHandler> = {
       payload: payload as DateRange | null,
     });
     satisfiedEventsRef.current.add('selectedDashboardDateRange');
+    // Emit V2 event
+    emitV2Event(INBOUND_EVENTS_V2.SELECTED_DATE_RANGE, payload);
   },
 
   [INBOUND_EVENTS.SELECTED_DASHBOARD_OBJECT]: (
@@ -86,6 +110,8 @@ const messageHandlers: Record<string, MessageHandler> = {
       payload: payload as DashboardObject | null,
     });
     satisfiedEventsRef.current.add('selectedDashboardObject');
+    // Emit V2 event
+    emitV2Event(INBOUND_EVENTS_V2.SELECTED_DASHBOARD_OBJECT, payload);
   },
 
   [INBOUND_EVENTS.SELECTED_DEVICE_OBJECT]: (
@@ -98,6 +124,7 @@ const messageHandlers: Record<string, MessageHandler> = {
       payload: payload as DeviceObject | null,
     });
     satisfiedEventsRef.current.add('selectedDeviceObject');
+    // Note: No V2 equivalent for SELECTED_DEVICE_OBJECT
   },
 
   [INBOUND_EVENTS.SELECTED_DEVICE_OBJECTS]: (
@@ -110,6 +137,7 @@ const messageHandlers: Record<string, MessageHandler> = {
       payload: payload as DeviceObject[] | null,
     });
     satisfiedEventsRef.current.add('selectedDeviceObjects');
+    // Note: No V2 equivalent for SELECTED_DEVICE_OBJECTS
   },
 
   [INBOUND_EVENTS.SELECTED_FILTERS]: (
@@ -122,9 +150,88 @@ const messageHandlers: Record<string, MessageHandler> = {
       payload: payload as FilterValue[] | null,
     });
     satisfiedEventsRef.current.add('selectedFilters');
+    // Emit V2 event
+    emitV2Event(INBOUND_EVENTS_V2.SELECTED_FILTERS, payload);
   },
 
   [INBOUND_EVENTS.IS_REAL_TIME_ACTIVE]: (
+    payload,
+    dispatch,
+    satisfiedEventsRef
+  ) => {
+    dispatch({
+      type: ACTION_TYPES.REAL_TIME_STATUS,
+      payload: payload as boolean | null,
+    });
+    satisfiedEventsRef.current.add('isRealTimeActive');
+    // Emit V2 event
+    emitV2Event(INBOUND_EVENTS_V2.REALTIME_ACTIVE, payload);
+  },
+
+  // ==================== V2 Events (direct handlers) ====================
+  // These allow the system to also receive V2 events directly
+  [INBOUND_EVENTS_V2.TOKEN]: (payload, dispatch, satisfiedEventsRef) => {
+    dispatch({ type: ACTION_TYPES.RECEIVED_TOKEN, payload: payload as string });
+    satisfiedEventsRef.current.add('receivedToken');
+  },
+
+  [INBOUND_EVENTS_V2.JWT]: (payload, dispatch, satisfiedEventsRef) => {
+    dispatch({
+      type: ACTION_TYPES.RECEIVED_JWT_TOKEN,
+      payload: payload as string,
+    });
+    satisfiedEventsRef.current.add('receivedJWTToken');
+  },
+
+  [INBOUND_EVENTS_V2.SELECTED_DEVICES]: (
+    payload,
+    dispatch,
+    satisfiedEventsRef
+  ) => {
+    dispatch({
+      type: ACTION_TYPES.SELECTED_DEVICES,
+      payload: payload as Device[] | null,
+    });
+    satisfiedEventsRef.current.add('selectedDevices');
+  },
+
+  [INBOUND_EVENTS_V2.SELECTED_DATE_RANGE]: (
+    payload,
+    dispatch,
+    satisfiedEventsRef
+  ) => {
+    dispatch({
+      type: ACTION_TYPES.SELECTED_DASHBOARD_DATE_RANGE,
+      payload: payload as DateRange | null,
+    });
+    satisfiedEventsRef.current.add('selectedDashboardDateRange');
+  },
+
+  [INBOUND_EVENTS_V2.SELECTED_DASHBOARD_OBJECT]: (
+    payload,
+    dispatch,
+    satisfiedEventsRef
+  ) => {
+    dispatch({
+      type: ACTION_TYPES.SELECTED_DASHBOARD_OBJECT,
+      payload: payload as DashboardObject | null,
+    });
+    satisfiedEventsRef.current.add('selectedDashboardObject');
+  },
+
+  [INBOUND_EVENTS_V2.SELECTED_FILTERS]: (
+    payload,
+    dispatch,
+    satisfiedEventsRef
+  ) => {
+    dispatch({
+      type: ACTION_TYPES.SELECTED_FILTERS,
+      payload: payload as FilterValue[] | null,
+    });
+    satisfiedEventsRef.current.add('selectedFilters');
+  },
+
+  [INBOUND_EVENTS_V2.REALTIME_ACTIVE]: (
     payload,
     dispatch,
     satisfiedEventsRef

@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { handleInboundMessage } from '../messageHandlers';
-import { INBOUND_EVENTS } from '../constants';
+import { INBOUND_EVENTS, INBOUND_EVENTS_V2 } from '../constants';
 import type { ReadyEvent } from '@/types';
 
 describe('messageHandlers', () => {
@@ -311,6 +311,314 @@ describe('messageHandlers', () => {
         payload: token,
       });
       expect(satisfiedEventsRef.current.has('receivedToken')).toBe(true);
+    });
+  });
+
+  describe('V2 Events emission from V1 handlers', () => {
+    let postMessageSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      postMessageSpy = vi.spyOn(window.parent, 'postMessage');
+    });
+
+    afterEach(() => {
+      postMessageSpy.mockRestore();
+    });
+
+    it('should emit v2:auth:token when receivedToken is processed', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+
+      handleInboundMessage(
+        INBOUND_EVENTS.RECEIVED_TOKEN,
+        'test-token',
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        { event: INBOUND_EVENTS_V2.TOKEN, payload: 'test-token' },
+        '*'
+      );
+    });
+
+    it('should emit v2:auth:jwt when receivedJWTToken is processed', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+
+      handleInboundMessage(
+        INBOUND_EVENTS.RECEIVED_JWT_TOKEN,
+        'jwt-token',
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        { event: INBOUND_EVENTS_V2.JWT, payload: 'jwt-token' },
+        '*'
+      );
+    });
+
+    it('should emit v2:dashboard:devices:selected when selectedDevice is processed', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+
+      handleInboundMessage(
+        INBOUND_EVENTS.SELECTED_DEVICE,
+        'device-123',
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        {
+          event: INBOUND_EVENTS_V2.SELECTED_DEVICES,
+          payload: [{ id: 'device-123' }],
+        },
+        '*'
+      );
+    });
+
+    it('should emit v2:dashboard:devices:selected when selectedDevices is processed', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+      const devices = [{ id: 'dev1' }, { id: 'dev2' }];
+
+      handleInboundMessage(
+        INBOUND_EVENTS.SELECTED_DEVICES,
+        devices,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        { event: INBOUND_EVENTS_V2.SELECTED_DEVICES, payload: devices },
+        '*'
+      );
+    });
+
+    it('should emit v2:dashboard:settings:daterange when selectedDashboardDateRange is processed', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+      const dateRange = { startTime: 1000, endTime: 2000 };
+
+      handleInboundMessage(
+        INBOUND_EVENTS.SELECTED_DASHBOARD_DATE_RANGE,
+        dateRange,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        { event: INBOUND_EVENTS_V2.SELECTED_DATE_RANGE, payload: dateRange },
+        '*'
+      );
+    });
+
+    it('should emit v2:dashboard:self when selectedDashboardObject is processed', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+      const dashboardObject = { id: 'dash-1', name: 'Dashboard' };
+
+      handleInboundMessage(
+        INBOUND_EVENTS.SELECTED_DASHBOARD_OBJECT,
+        dashboardObject,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        {
+          event: INBOUND_EVENTS_V2.SELECTED_DASHBOARD_OBJECT,
+          payload: dashboardObject,
+        },
+        '*'
+      );
+    });
+
+    it('should emit v2:dashboard:settings:filters when selectedFilters is processed', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+      const filters = [{ id: 'filter1', value: 'value1' }];
+
+      handleInboundMessage(
+        INBOUND_EVENTS.SELECTED_FILTERS,
+        filters,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        { event: INBOUND_EVENTS_V2.SELECTED_FILTERS, payload: filters },
+        '*'
+      );
+    });
+
+    it('should emit v2:dashboard:settings:rt when isRealTimeActive is processed', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+
+      handleInboundMessage(
+        INBOUND_EVENTS.IS_REAL_TIME_ACTIVE,
+        true,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        { event: INBOUND_EVENTS_V2.REALTIME_ACTIVE, payload: true },
+        '*'
+      );
+    });
+
+    it('should NOT emit V2 event when selectedDevice payload is invalid', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+
+      handleInboundMessage(
+        INBOUND_EVENTS.SELECTED_DEVICE,
+        null,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(postMessageSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('V2 Events direct handlers', () => {
+    it('should handle v2:auth:token event', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+
+      handleInboundMessage(
+        INBOUND_EVENTS_V2.TOKEN,
+        'v2-token',
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'RECEIVED_TOKEN',
+        payload: 'v2-token',
+      });
+      expect(satisfiedEventsRef.current.has('receivedToken')).toBe(true);
+    });
+
+    it('should handle v2:auth:jwt event', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+
+      handleInboundMessage(
+        INBOUND_EVENTS_V2.JWT,
+        'v2-jwt-token',
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'RECEIVED_JWT_TOKEN',
+        payload: 'v2-jwt-token',
+      });
+      expect(satisfiedEventsRef.current.has('receivedJWTToken')).toBe(true);
+    });
+
+    it('should handle v2:dashboard:devices:selected event', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+      const devices = [{ id: 'v2-dev1' }, { id: 'v2-dev2' }];
+
+      handleInboundMessage(
+        INBOUND_EVENTS_V2.SELECTED_DEVICES,
+        devices,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'SELECTED_DEVICES',
+        payload: devices,
+      });
+      expect(satisfiedEventsRef.current.has('selectedDevices')).toBe(true);
+    });
+
+    it('should handle v2:dashboard:settings:daterange event', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+      const dateRange = { startTime: 5000, endTime: 6000 };
+
+      handleInboundMessage(
+        INBOUND_EVENTS_V2.SELECTED_DATE_RANGE,
+        dateRange,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'SELECTED_DASHBOARD_DATE_RANGE',
+        payload: dateRange,
+      });
+      expect(satisfiedEventsRef.current.has('selectedDashboardDateRange')).toBe(
+        true
+      );
+    });
+
+    it('should handle v2:dashboard:self event', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+      const dashboard = { id: 'v2-dash', name: 'V2 Dashboard' };
+
+      handleInboundMessage(
+        INBOUND_EVENTS_V2.SELECTED_DASHBOARD_OBJECT,
+        dashboard,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'SELECTED_DASHBOARD_OBJECT',
+        payload: dashboard,
+      });
+      expect(satisfiedEventsRef.current.has('selectedDashboardObject')).toBe(
+        true
+      );
+    });
+
+    it('should handle v2:dashboard:settings:filters event', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+      const filters = [{ id: 'v2-filter', value: 'v2-value' }];
+
+      handleInboundMessage(
+        INBOUND_EVENTS_V2.SELECTED_FILTERS,
+        filters,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'SELECTED_FILTERS',
+        payload: filters,
+      });
+      expect(satisfiedEventsRef.current.has('selectedFilters')).toBe(true);
+    });
+
+    it('should handle v2:dashboard:settings:rt event', () => {
+      const dispatch = vi.fn();
+      const satisfiedEventsRef = { current: new Set<ReadyEvent>() };
+
+      handleInboundMessage(
+        INBOUND_EVENTS_V2.REALTIME_ACTIVE,
+        false,
+        dispatch,
+        satisfiedEventsRef
+      );
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'REAL_TIME_STATUS',
+        payload: false,
+      });
+      expect(satisfiedEventsRef.current.has('isRealTimeActive')).toBe(true);
     });
   });
 });

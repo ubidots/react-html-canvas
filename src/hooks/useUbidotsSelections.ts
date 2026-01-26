@@ -54,3 +54,8 @@ export function useUbidotsSelectedFilters() {
   const { state } = useUbidots();
   return state.selectedFilters;
 }
+
+export function useUbidotsWidgetId() {
+  const { state } = useUbidots();
+  return state.widgetId;
+}

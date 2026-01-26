@@ -1,4 +1,5 @@
-export type ReadyEvent =
+// V1 Ready Events (legacy)
+export type ReadyEventV1 =
   | 'receivedToken'
   | 'receivedJWTToken'
   | 'selectedDevice'
@@ -9,6 +10,21 @@ export type ReadyEvent =
   | 'selectedDeviceObjects'
   | 'selectedFilters'
   | 'isRealTimeActive';
+
+// V2 Ready Events
+export type ReadyEventV2 =
+  | 'v2:auth:token'
+  | 'v2:auth:jwt'
+  | 'v2:dashboard:devices:self'
+  | 'v2:dashboard:devices:selected'
+  | 'v2:dashboard:settings:daterange'
+  | 'v2:dashboard:settings:refreshed'
+  | 'v2:dashboard:settings:rt'
+  | 'v2:dashboard:self'
+  | 'v2:dashboard:settings:filters';
+
+// Combined type for backward compatibility
+export type ReadyEvent = ReadyEventV1 | ReadyEventV2;
 
 export interface Device {
   id: string;
@@ -58,6 +74,7 @@ export interface UbidotsState {
   selectedFilters: FilterValue[] | null;
   realTime: boolean | null;
   widget: WidgetInfo | null;
+  widgetId: string | null;
 }
 
 export type UbidotsAction =
@@ -72,7 +89,8 @@ export type UbidotsAction =
   | { type: 'SELECTED_FILTERS'; payload: FilterValue[] | null }
   | { type: 'REAL_TIME_STATUS'; payload: boolean | null }
   | { type: 'SET_READY'; payload: boolean }
-  | { type: 'SET_WIDGET'; payload: WidgetInfo | null };
+  | { type: 'SET_WIDGET'; payload: WidgetInfo | null }
+  | { type: 'SET_WIDGET_ID'; payload: string | null };
 
 export interface OutboundActions {
   setDashboardDevice: (deviceId: string) => void;

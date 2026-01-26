@@ -14,6 +14,7 @@ import {
   useUbidotsWidget,
   useUbidotsSelectedDeviceObjects,
   useUbidotsSelectedFilters,
+  useUbidotsWidgetId,
 } from '@/hooks/useUbidotsSelections';
 import type {
   Device,
@@ -393,6 +394,52 @@ describe('useUbidotsSelections', () => {
           { id: 'filter1', value: 'value1' },
           { id: 'filter2', value: 'value2' },
         ]);
+      });
+    });
+
+    it('useUbidotsWidgetId returns widgetId from provider prop', async () => {
+      let capturedValue: string | null = null;
+
+      function Tester() {
+        return (
+          <SelectionProbe
+            hookFn={useUbidotsWidgetId}
+            onValue={v => (capturedValue = v)}
+          />
+        );
+      }
+
+      render(
+        <UbidotsProvider widgetId='test-widget-123'>
+          <Tester />
+        </UbidotsProvider>
+      );
+
+      await waitFor(() => {
+        expect(capturedValue).toBe('test-widget-123');
+      });
+    });
+
+    it('useUbidotsWidgetId returns null when widgetId is not provided', async () => {
+      let capturedValue: string | null = 'initial';
+
+      function Tester() {
+        return (
+          <SelectionProbe
+            hookFn={useUbidotsWidgetId}
+            onValue={v => (capturedValue = v)}
+          />
+        );
+      }
+
+      render(
+        <UbidotsProvider>
+          <Tester />
+        </UbidotsProvider>
+      );
+
+      await waitFor(() => {
+        expect(capturedValue).toBeNull();
       });
     });
   });

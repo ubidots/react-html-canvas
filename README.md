@@ -98,13 +98,30 @@ See the [docs/](./docs/) folder for comprehensive API documentation:
 
 ### 🎯 Working Examples
 
-See the [examples/](./examples/) folder for complete working examples:
+#### Running Examples Locally
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start the examples server
+pnpm run dev:examples
+```
+
+This will open `http://localhost:3000` with an interactive gallery of all examples.
+
+#### Available Examples
 
 - **[Basic Usage](./examples/basic-usage/)** - Simple setup and device display
 - **[Device Selector](./examples/device-selector/)** - Interactive device selection with single/multi-select
 - **[Real-time Dashboard](./examples/real-time-dashboard/)** - Live data streaming and controls
 - **[Complete Widget](./examples/complete-widget/)** - Comprehensive example testing all features
+- **[Event Versioning](./examples/event-versioning/)** - V1 and V2 event compatibility
+- **[Widget Events - Basic](./examples/widget-events-basic/)** ⭐ NEW - Widget-specific events with `v2:widget:<event>:<widgetId>` pattern
+- **[Widget Events - Multi](./examples/widget-events-multi/)** ⭐ NEW - Multiple widgets with isolated event namespaces
 - **[With HOCs](./examples/with-hocs/)** - Higher-Order Components usage
+
+📖 **[Full Guide: How to Run Examples](./examples/RUNNING_EXAMPLES.md)**
 
 ## Configurable Ready State
 
