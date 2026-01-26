@@ -42,9 +42,13 @@ describe('actions', () => {
       actions.setDashboardDevice('my-device');
 
       const v2Call = postMessageSpy.mock.calls.find(
-        call => call[0].event === OUTBOUND_EVENTS_V2.SET_DASHBOARD_DEVICE
+        call =>
+          (call[0] as { event: string }).event ===
+          OUTBOUND_EVENTS_V2.SET_DASHBOARD_DEVICE
       );
-      expect(v2Call![0].payload).toEqual([{ id: 'my-device' }]);
+      expect((v2Call![0] as { payload: unknown }).payload).toEqual([
+        { id: 'my-device' },
+      ]);
     });
   });
 
@@ -77,9 +81,13 @@ describe('actions', () => {
 
       const v2Call = postMessageSpy.mock.calls.find(
         call =>
-          call[0].event === OUTBOUND_EVENTS_V2.SET_DASHBOARD_MULTIPLE_DEVICES
+          (call[0] as { event: string }).event ===
+          OUTBOUND_EVENTS_V2.SET_DASHBOARD_MULTIPLE_DEVICES
       );
-      expect(v2Call![0].payload).toEqual([{ id: 'a' }, { id: 'b' }]);
+      expect((v2Call![0] as { payload: unknown }).payload).toEqual([
+        { id: 'a' },
+        { id: 'b' },
+      ]);
     });
   });
 
