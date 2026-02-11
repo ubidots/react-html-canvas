@@ -5,6 +5,7 @@ import {
   withUbidotsActions,
   compose,
 } from '@ubidots/react-html-canvas';
+import { EventEmitterPanel } from '../shared/EventEmitterPanel';
 import './styles.css';
 
 function DeviceDisplay({ selectedDevice, title = 'Device Information' }) {
@@ -286,6 +287,7 @@ export function WithHocsExample() {
             </div>
           </div>
         </div>
+        <EventEmitterPanel />
       </div>
     </UbidotsProvider>
   );

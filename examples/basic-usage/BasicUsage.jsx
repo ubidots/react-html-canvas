@@ -5,13 +5,13 @@ import {
   useUbidotsSelectedDevice,
   useUbidotsActions,
 } from '@ubidots/react-html-canvas';
+import { EventEmitterPanel } from '../shared/EventEmitterPanel';
 import './styles.css';
 
 function DeviceInfo() {
   const ready = useUbidotsReady();
   const device = useUbidotsSelectedDevice();
   const { setDashboardDevice, refreshDashboard } = useUbidotsActions();
-
   if (!ready) {
     return (
       <div className='loading'>
@@ -76,6 +76,8 @@ export function BasicUsage() {
         <main>
           <DeviceInfo />
         </main>
+
+        <EventEmitterPanel />
       </div>
     </UbidotsProvider>
   );
