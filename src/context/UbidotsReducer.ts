@@ -92,6 +92,5 @@ export function ubidotsReducer(
   action: UbidotsAction
 ): UbidotsState {
   const handler = reducerHandlers[action.type];
-  const r = handler ? handler(state, action) : state;
-  return r;
+  return handler ? handler(state, action) : state;
 }
