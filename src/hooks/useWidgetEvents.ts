@@ -5,8 +5,10 @@ import { useUbidotsWidgetId } from './useUbidotsSelections';
 /**
  * Hook for emitting and listening to widget-specific events
  *
- * Widget events follow the pattern: v2:widget:<event>:<widgetId>
- * This allows multiple widgets to coexist with isolated event namespaces
+ * Widget events follow the pattern: v2:widget:<widgetId>:<event>
+ * This allows multiple widgets to coexist with isolated event namespaces.
+ * Use the wildcard pattern v2:widget:<widgetId>:* to listen to all events
+ * from a specific widget.
  */
 export function useWidgetEvents(widgetIdParam?: string) {
   const { state } = useUbidots();
@@ -29,7 +31,7 @@ export function useWidgetEvents(widgetIdParam?: string) {
         return;
       }
 
-      const eventName = `v2:widget:${event}:${widgetId}`;
+      const eventName = `v2:widget:${widgetId}:${event}`;
 
       // Emit to parent window
       window.parent.postMessage(
@@ -106,9 +108,11 @@ export function useWidgetEvents(widgetIdParam?: string) {
         callback(payload);
       });
 
-      // Also notify wildcard listeners
-      listenersRef.current.get('*')?.forEach(callback => {
-        callback(payload);
+      // Notify wildcard listeners (e.g. "v2:widget:<widgetId>:*")
+      listenersRef.current.forEach((callbacks, key) => {
+        if (key.endsWith(':*') && event.startsWith(key.slice(0, -1))) {
+          callbacks.forEach(cb => cb(payload));
+        }
       });
     };
 

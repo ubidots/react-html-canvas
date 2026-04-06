@@ -67,11 +67,14 @@ export function UbidotsProvider({
   });
   const readyRef = useRef(false);
   const satisfiedEventsRef = useRef(new Set<ReadyEvent>());
+  // Mutable ref so the message handler always reads the latest state
+  // without needing state in its dependency array.
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
-  // Set widgetId on window and in state
+  // Set widgetId in state
   useEffect(() => {
     if (widgetId) {
-      (window as unknown as Record<string, unknown>).widgetId = widgetId;
       dispatch({ type: ACTION_TYPES.SET_WIDGET_ID, payload: widgetId });
     }
   }, [widgetId]);
@@ -91,12 +94,15 @@ export function UbidotsProvider({
 
       if (event) {
         handleInboundMessage(event, payload, dispatch, satisfiedEventsRef);
+        // Use stateRef.current so this effect doesn't re-register on every
+        // state update. The second useEffect below also runs checkReadyState
+        // on state changes to catch the state-value-based ready condition.
         checkReadyState(
           readyEvents,
           satisfiedEventsRef,
           readyRef,
           dispatch,
-          state,
+          stateRef.current,
           onReady
         );
       }
@@ -104,7 +110,7 @@ export function UbidotsProvider({
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [isOriginValid, onReady, readyEvents, state]);
+  }, [isOriginValid, onReady, readyEvents]);
 
   useEffect(() => {
     checkReadyState(
@@ -118,8 +124,8 @@ export function UbidotsProvider({
   }, [state, readyEvents, onReady]);
 
   const actions = useMemo(
-    () => createActions(state.jwtToken, state.token),
-    [state.jwtToken, state.token]
+    () => createActions(state.jwtToken, state.token, state.widgetId),
+    [state.jwtToken, state.token, state.widgetId]
   );
 
   const value = useMemo<UbidotsContextValue>(

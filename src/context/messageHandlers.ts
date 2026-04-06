@@ -169,10 +169,11 @@ const messageHandlers: Record<string, MessageHandler> = {
   },
 
   // ==================== V2 Events (direct handlers) ====================
-  // These allow the system to also receive V2 events directly
+  // These allow the system to also receive V2 events directly.
+  // satisfiedEventsRef must store V2 event names so that readyEvents: ['v2:...'] works correctly.
   [INBOUND_EVENTS_V2.TOKEN]: (payload, dispatch, satisfiedEventsRef) => {
     dispatch({ type: ACTION_TYPES.RECEIVED_TOKEN, payload: payload as string });
-    satisfiedEventsRef.current.add('receivedToken');
+    satisfiedEventsRef.current.add(INBOUND_EVENTS_V2.TOKEN);
   },
 
   [INBOUND_EVENTS_V2.JWT]: (payload, dispatch, satisfiedEventsRef) => {
@@ -180,7 +181,7 @@ const messageHandlers: Record<string, MessageHandler> = {
       type: ACTION_TYPES.RECEIVED_JWT_TOKEN,
       payload: payload as string,
     });
-    satisfiedEventsRef.current.add('receivedJWTToken');
+    satisfiedEventsRef.current.add(INBOUND_EVENTS_V2.JWT);
   },
 
   [INBOUND_EVENTS_V2.SELECTED_DEVICES]: (
@@ -188,11 +189,14 @@ const messageHandlers: Record<string, MessageHandler> = {
     dispatch,
     satisfiedEventsRef
   ) => {
-    dispatch({
-      type: ACTION_TYPES.SELECTED_DEVICES,
-      payload: payload as Device[] | null,
-    });
-    satisfiedEventsRef.current.add('selectedDevices');
+    const devices = payload as Device[] | null;
+    dispatch({ type: ACTION_TYPES.SELECTED_DEVICES, payload: devices });
+    // Also populate selectedDevice with first element so hooks like
+    // useUbidotsSelectedDevice() work correctly when only V2 events arrive.
+    const firstDevice =
+      Array.isArray(devices) && devices.length > 0 ? devices[0] : null;
+    dispatch({ type: ACTION_TYPES.SELECTED_DEVICE, payload: firstDevice });
+    satisfiedEventsRef.current.add(INBOUND_EVENTS_V2.SELECTED_DEVICES);
   },
 
   [INBOUND_EVENTS_V2.SELECTED_DATE_RANGE]: (
@@ -204,7 +208,7 @@ const messageHandlers: Record<string, MessageHandler> = {
       type: ACTION_TYPES.SELECTED_DASHBOARD_DATE_RANGE,
       payload: payload as DateRange | null,
     });
-    satisfiedEventsRef.current.add('selectedDashboardDateRange');
+    satisfiedEventsRef.current.add(INBOUND_EVENTS_V2.SELECTED_DATE_RANGE);
   },
 
   [INBOUND_EVENTS_V2.SELECTED_DASHBOARD_OBJECT]: (
@@ -216,7 +220,9 @@ const messageHandlers: Record<string, MessageHandler> = {
       type: ACTION_TYPES.SELECTED_DASHBOARD_OBJECT,
       payload: payload as DashboardObject | null,
     });
-    satisfiedEventsRef.current.add('selectedDashboardObject');
+    satisfiedEventsRef.current.add(
+      INBOUND_EVENTS_V2.SELECTED_DASHBOARD_OBJECT
+    );
   },
 
   [INBOUND_EVENTS_V2.SELECTED_FILTERS]: (
@@ -228,7 +234,7 @@ const messageHandlers: Record<string, MessageHandler> = {
       type: ACTION_TYPES.SELECTED_FILTERS,
       payload: payload as FilterValue[] | null,
     });
-    satisfiedEventsRef.current.add('selectedFilters');
+    satisfiedEventsRef.current.add(INBOUND_EVENTS_V2.SELECTED_FILTERS);
   },
 
   [INBOUND_EVENTS_V2.REALTIME_ACTIVE]: (
@@ -240,7 +246,7 @@ const messageHandlers: Record<string, MessageHandler> = {
       type: ACTION_TYPES.REAL_TIME_STATUS,
       payload: payload as boolean | null,
     });
-    satisfiedEventsRef.current.add('isRealTimeActive');
+    satisfiedEventsRef.current.add(INBOUND_EVENTS_V2.REALTIME_ACTIVE);
   },
 };
 

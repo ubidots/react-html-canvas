@@ -19,7 +19,7 @@ describe('actions', () => {
 
   describe('setDashboardDevice', () => {
     it('should emit both V1 and V2 events', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setDashboardDevice('device-123');
 
@@ -37,7 +37,7 @@ describe('actions', () => {
     });
 
     it('should convert single device ID to array format for V2', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setDashboardDevice('my-device');
 
@@ -54,7 +54,7 @@ describe('actions', () => {
 
   describe('setDashboardMultipleDevices', () => {
     it('should emit both V1 and V2 events', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setDashboardMultipleDevices(['dev1', 'dev2', 'dev3']);
 
@@ -75,7 +75,7 @@ describe('actions', () => {
     });
 
     it('should convert string array to Device array for V2', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setDashboardMultipleDevices(['a', 'b']);
 
@@ -93,7 +93,7 @@ describe('actions', () => {
 
   describe('setDashboardDateRange', () => {
     it('should emit both V1 and V2 events for valid date range', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
       const dateRange = { startTime: 1000, endTime: 2000 };
 
       actions.setDashboardDateRange(dateRange);
@@ -112,7 +112,7 @@ describe('actions', () => {
     });
 
     it('should NOT emit events for invalid date range (startTime >= endTime)', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
       const invalidRange = { startTime: 2000, endTime: 1000 };
 
       actions.setDashboardDateRange(invalidRange);
@@ -121,7 +121,7 @@ describe('actions', () => {
     });
 
     it('should NOT emit events for null date range', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setDashboardDateRange(
         null as unknown as { startTime: number; endTime: number }
@@ -133,7 +133,7 @@ describe('actions', () => {
 
   describe('setDashboardLayer', () => {
     it('should only emit V1 event (no V2 equivalent)', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setDashboardLayer('layer-1');
 
@@ -147,7 +147,7 @@ describe('actions', () => {
 
   describe('setRealTime', () => {
     it('should emit both V1 and V2 events with true', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setRealTime(true);
 
@@ -162,7 +162,7 @@ describe('actions', () => {
     });
 
     it('should emit both V1 and V2 events with false', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setRealTime(false);
 
@@ -179,7 +179,7 @@ describe('actions', () => {
 
   describe('refreshDashboard', () => {
     it('should emit both V1 and V2 events without payload', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.refreshDashboard();
 
@@ -196,15 +196,15 @@ describe('actions', () => {
 
   describe('openDrawer', () => {
     it('should emit both V1 and V2 events with drawer info', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
       const drawerOpts = { url: 'https://example.com', width: 400 };
 
       actions.openDrawer(drawerOpts);
 
-      // When widgetId is not set on window, it will be undefined
+      // When widgetId is null, falls back to 'react-widget'
       const expectedPayload = {
         drawerInfo: drawerOpts,
-        id: undefined,
+        id: 'react-widget',
       };
 
       expect(postMessageSpy).toHaveBeenCalledWith(
@@ -217,10 +217,8 @@ describe('actions', () => {
       );
     });
 
-    it('should use widgetId from window if available', () => {
-      (window as unknown as Record<string, unknown>).widgetId =
-        'custom-widget-id';
-      const actions = createActions(null, 'token');
+    it('should use widgetId from context state when provided', () => {
+      const actions = createActions(null, 'token', 'custom-widget-id');
       const drawerOpts = { url: 'https://example.com', width: 300 };
 
       actions.openDrawer(drawerOpts);
@@ -243,7 +241,7 @@ describe('actions', () => {
 
   describe('setFullScreen', () => {
     it('should emit both V1 and V2 events with toggle', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setFullScreen('toggle');
 
@@ -258,7 +256,7 @@ describe('actions', () => {
     });
 
     it('should emit both V1 and V2 events with enable', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setFullScreen('enable');
 
@@ -273,7 +271,7 @@ describe('actions', () => {
     });
 
     it('should emit both V1 and V2 events with disable', () => {
-      const actions = createActions(null, 'token');
+      const actions = createActions(null, 'token', null);
 
       actions.setFullScreen('disable');
 
@@ -290,7 +288,7 @@ describe('actions', () => {
 
   describe('getHeaders', () => {
     it('should return JWT Bearer header when jwtToken is provided', () => {
-      const actions = createActions('jwt-token-123', null);
+      const actions = createActions('jwt-token-123', null, null);
 
       const headers = actions.getHeaders();
 
@@ -301,7 +299,7 @@ describe('actions', () => {
     });
 
     it('should return X-Auth-Token header when only token is provided', () => {
-      const actions = createActions(null, 'api-token-456');
+      const actions = createActions(null, 'api-token-456', null);
 
       const headers = actions.getHeaders();
 
@@ -312,7 +310,7 @@ describe('actions', () => {
     });
 
     it('should prefer JWT token over API token', () => {
-      const actions = createActions('jwt-token', 'api-token');
+      const actions = createActions('jwt-token', 'api-token', null);
 
       const headers = actions.getHeaders();
 
@@ -323,7 +321,7 @@ describe('actions', () => {
     });
 
     it('should return only Content-type when no tokens are provided', () => {
-      const actions = createActions(null, null);
+      const actions = createActions(null, null, null);
 
       const headers = actions.getHeaders();
 

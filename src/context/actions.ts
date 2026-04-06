@@ -75,18 +75,19 @@ function validateDateRange(range: DateRange): boolean {
 }
 
 /**
- * Action creators using object mapping
- * Each action emits both V1 and V2 events for backward compatibility
+ * Action creators that don't depend on session-specific values.
+ * Each action emits both V1 and V2 events for backward compatibility.
+ * openDrawer requires widgetId and lives in createActions instead.
  */
 const actionCreators = {
   setDashboardDevice: (deviceId: string) => {
-    // Convert single device to array for V2
+    // V1: single id string  |  V2: array of device objects
     postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_DEVICE, deviceId);
     postMessage(OUTBOUND_EVENTS_V2.SET_DASHBOARD_DEVICE, [{ id: deviceId }]);
   },
 
   setDashboardMultipleDevices: (deviceIds: string[]) => {
-    // Convert string array to Device array for V2
+    // V1: string array  |  V2: array of device objects
     const devices = deviceIds.map(id => ({ id }));
     postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_MULTIPLE_DEVICES, deviceIds);
     postMessage(OUTBOUND_EVENTS_V2.SET_DASHBOARD_MULTIPLE_DEVICES, devices);
@@ -102,7 +103,7 @@ const actionCreators = {
   },
 
   setDashboardLayer: (layerId: string) => {
-    // V2 doesn't have a direct equivalent for layer
+    // V2 protocol has no equivalent for layer yet — only V1 is sent.
     postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_LAYER, layerId);
   },
 
@@ -119,16 +120,6 @@ const actionCreators = {
       OUTBOUND_EVENTS_V2.REFRESH_DASHBOARD
     ),
 
-  openDrawer: (opts: { url: string; width: number }) => {
-    const id =
-      typeof window !== 'undefined'
-        ? (window as unknown as Record<string, unknown>).widgetId
-        : 'react-widget';
-    const payload = { drawerInfo: opts, id };
-    postMessage(OUTBOUND_EVENTS.OPEN_DRAWER, payload);
-    postMessage(OUTBOUND_EVENTS_V2.OPEN_DRAWER, payload);
-  },
-
   setFullScreen: (setting: 'toggle' | 'enable' | 'disable') =>
     postMessageWithV2(
       OUTBOUND_EVENTS.SET_FULL_SCREEN,
@@ -138,14 +129,25 @@ const actionCreators = {
 };
 
 /**
- * Create actions object with header generation
+ * Create actions object with header generation.
+ * openDrawer is defined here (not in actionCreators) so it can close over
+ * widgetId from context state instead of reading from window globals.
  */
 export function createActions(
   jwtToken: string | null,
-  token: string | null
+  token: string | null,
+  widgetId: string | null
 ): OutboundActions {
   return {
     ...actionCreators,
+    openDrawer: (opts: { url: string; width: number }) => {
+      const payload = { drawerInfo: opts, id: widgetId ?? 'react-widget' };
+      postMessageWithV2(
+        OUTBOUND_EVENTS.OPEN_DRAWER,
+        OUTBOUND_EVENTS_V2.OPEN_DRAWER,
+        payload
+      );
+    },
     getHeaders: () => generateHeaders(jwtToken, token),
   };
 }

@@ -502,7 +502,8 @@ describe('messageHandlers', () => {
         type: 'RECEIVED_TOKEN',
         payload: 'v2-token',
       });
-      expect(satisfiedEventsRef.current.has('receivedToken')).toBe(true);
+      // V2 handler stores the V2 event name so readyEvents: ['v2:auth:token'] works
+      expect(satisfiedEventsRef.current.has('v2:auth:token')).toBe(true);
     });
 
     it('should handle v2:auth:jwt event', () => {
@@ -520,7 +521,7 @@ describe('messageHandlers', () => {
         type: 'RECEIVED_JWT_TOKEN',
         payload: 'v2-jwt-token',
       });
-      expect(satisfiedEventsRef.current.has('receivedJWTToken')).toBe(true);
+      expect(satisfiedEventsRef.current.has('v2:auth:jwt')).toBe(true);
     });
 
     it('should handle v2:dashboard:devices:selected event', () => {
@@ -535,11 +536,16 @@ describe('messageHandlers', () => {
         satisfiedEventsRef
       );
 
+      // Should update both selectedDevices (array) and selectedDevice (first element)
       expect(dispatch).toHaveBeenCalledWith({
         type: 'SELECTED_DEVICES',
         payload: devices,
       });
-      expect(satisfiedEventsRef.current.has('selectedDevices')).toBe(true);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'SELECTED_DEVICE',
+        payload: { id: 'v2-dev1' },
+      });
+      expect(satisfiedEventsRef.current.has('v2:dashboard:devices:selected')).toBe(true);
     });
 
     it('should handle v2:dashboard:settings:daterange event', () => {
@@ -558,9 +564,7 @@ describe('messageHandlers', () => {
         type: 'SELECTED_DASHBOARD_DATE_RANGE',
         payload: dateRange,
       });
-      expect(satisfiedEventsRef.current.has('selectedDashboardDateRange')).toBe(
-        true
-      );
+      expect(satisfiedEventsRef.current.has('v2:dashboard:settings:daterange')).toBe(true);
     });
 
     it('should handle v2:dashboard:self event', () => {
@@ -579,9 +583,7 @@ describe('messageHandlers', () => {
         type: 'SELECTED_DASHBOARD_OBJECT',
         payload: dashboard,
       });
-      expect(satisfiedEventsRef.current.has('selectedDashboardObject')).toBe(
-        true
-      );
+      expect(satisfiedEventsRef.current.has('v2:dashboard:self')).toBe(true);
     });
 
     it('should handle v2:dashboard:settings:filters event', () => {
@@ -600,7 +602,7 @@ describe('messageHandlers', () => {
         type: 'SELECTED_FILTERS',
         payload: filters,
       });
-      expect(satisfiedEventsRef.current.has('selectedFilters')).toBe(true);
+      expect(satisfiedEventsRef.current.has('v2:dashboard:settings:filters')).toBe(true);
     });
 
     it('should handle v2:dashboard:settings:rt event', () => {
@@ -618,7 +620,7 @@ describe('messageHandlers', () => {
         type: 'REAL_TIME_STATUS',
         payload: false,
       });
-      expect(satisfiedEventsRef.current.has('isRealTimeActive')).toBe(true);
+      expect(satisfiedEventsRef.current.has('v2:dashboard:settings:rt')).toBe(true);
     });
   });
 });

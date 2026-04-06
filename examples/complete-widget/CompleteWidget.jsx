@@ -14,7 +14,6 @@ import {
   useUbidotsActions,
   useUbidotsAPI,
 } from '@ubidots/react-html-canvas';
-import { EventEmitterPanel } from '../shared/EventEmitterPanel';
 import './styles.css';
 
 function DataDisplay() {
@@ -370,7 +369,6 @@ export function CompleteWidget() {
             @ubidots/react-html-canvas
           </p>
         </footer>
-        <EventEmitterPanel />
       </div>
     </UbidotsProvider>
   );

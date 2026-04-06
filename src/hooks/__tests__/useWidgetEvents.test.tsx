@@ -43,7 +43,7 @@ describe('useWidgetEvents', () => {
 
       expect(postMessageSpy).toHaveBeenCalledWith(
         {
-          event: 'v2:widget:custom-event:widget-123',
+          event: 'v2:widget:widget-123:custom-event',
           payload: { data: 'test' },
         },
         '*'
@@ -75,7 +75,7 @@ describe('useWidgetEvents', () => {
 
       expect(postMessageSpy).toHaveBeenCalledWith(
         {
-          event: 'v2:widget:test-event:provider-widget',
+          event: 'v2:widget:provider-widget:test-event',
           payload: { value: 42 },
         },
         '*'
@@ -140,7 +140,7 @@ describe('useWidgetEvents', () => {
 
       expect(postMessageSpy).toHaveBeenCalledWith(
         {
-          event: 'v2:widget:ping:widget-abc',
+          event: 'v2:widget:widget-abc:ping',
           payload: undefined,
         },
         '*'
@@ -259,8 +259,9 @@ describe('useWidgetEvents', () => {
         expect(onEventFn).not.toBeNull();
       });
 
+      // 'v2:widget:*' catches all widget events (any widgetId, any event name)
       act(() => {
-        onEventFn!('*', wildcardCallback);
+        onEventFn!('v2:widget:*', wildcardCallback);
       });
 
       // Simulate receiving any widget event
@@ -268,7 +269,7 @@ describe('useWidgetEvents', () => {
         window.dispatchEvent(
           new MessageEvent('message', {
             data: {
-              event: 'v2:widget:any-event:any-widget',
+              event: 'v2:widget:any-widget:any-event',
               payload: { wildcard: true },
             },
           })
@@ -453,7 +454,7 @@ describe('useWidgetEvents', () => {
             call[0] &&
             typeof call[0] === 'object' &&
             'event' in call[0] &&
-            call[0].event === 'v2:widget:ready:lifecycle-widget'
+            call[0].event === 'v2:widget:lifecycle-widget:ready'
         );
         expect(readyCall).toBeDefined();
       });
@@ -463,11 +464,11 @@ describe('useWidgetEvents', () => {
           call[0] &&
           typeof call[0] === 'object' &&
           'event' in call[0] &&
-          call[0].event === 'v2:widget:ready:lifecycle-widget'
+          call[0].event === 'v2:widget:lifecycle-widget:ready'
       );
 
       expect(readyCall![0]).toMatchObject({
-        event: 'v2:widget:ready:lifecycle-widget',
+        event: 'v2:widget:lifecycle-widget:ready',
         payload: expect.objectContaining({
           widgetId: 'lifecycle-widget',
           timestamp: expect.any(Number),

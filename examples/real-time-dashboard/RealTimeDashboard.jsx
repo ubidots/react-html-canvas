@@ -7,7 +7,6 @@ import {
   useUbidotsDashboardDateRange,
   useUbidotsActions,
 } from '@ubidots/react-html-canvas';
-import { EventEmitterPanel } from '../shared/EventEmitterPanel';
 import './styles.css';
 
 function RealTimeIndicator() {
@@ -324,7 +323,6 @@ export function RealTimeDashboardExample() {
             <li>✅ Automatic data updates when real-time is active</li>
           </ul>
         </div>
-        <EventEmitterPanel />
       </div>
     </UbidotsProvider>
   );
