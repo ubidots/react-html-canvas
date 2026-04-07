@@ -220,9 +220,7 @@ const messageHandlers: Record<string, MessageHandler> = {
       type: ACTION_TYPES.SELECTED_DASHBOARD_OBJECT,
       payload: payload as DashboardObject | null,
     });
-    satisfiedEventsRef.current.add(
-      INBOUND_EVENTS_V2.SELECTED_DASHBOARD_OBJECT
-    );
+    satisfiedEventsRef.current.add(INBOUND_EVENTS_V2.SELECTED_DASHBOARD_OBJECT);
   },
 
   [INBOUND_EVENTS_V2.SELECTED_FILTERS]: (

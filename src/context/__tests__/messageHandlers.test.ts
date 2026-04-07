@@ -545,7 +545,9 @@ describe('messageHandlers', () => {
         type: 'SELECTED_DEVICE',
         payload: { id: 'v2-dev1' },
       });
-      expect(satisfiedEventsRef.current.has('v2:dashboard:devices:selected')).toBe(true);
+      expect(
+        satisfiedEventsRef.current.has('v2:dashboard:devices:selected')
+      ).toBe(true);
     });
 
     it('should handle v2:dashboard:settings:daterange event', () => {
@@ -564,7 +566,9 @@ describe('messageHandlers', () => {
         type: 'SELECTED_DASHBOARD_DATE_RANGE',
         payload: dateRange,
       });
-      expect(satisfiedEventsRef.current.has('v2:dashboard:settings:daterange')).toBe(true);
+      expect(
+        satisfiedEventsRef.current.has('v2:dashboard:settings:daterange')
+      ).toBe(true);
     });
 
     it('should handle v2:dashboard:self event', () => {
@@ -602,7 +606,9 @@ describe('messageHandlers', () => {
         type: 'SELECTED_FILTERS',
         payload: filters,
       });
-      expect(satisfiedEventsRef.current.has('v2:dashboard:settings:filters')).toBe(true);
+      expect(
+        satisfiedEventsRef.current.has('v2:dashboard:settings:filters')
+      ).toBe(true);
     });
 
     it('should handle v2:dashboard:settings:rt event', () => {
@@ -620,7 +626,9 @@ describe('messageHandlers', () => {
         type: 'REAL_TIME_STATUS',
         payload: false,
       });
-      expect(satisfiedEventsRef.current.has('v2:dashboard:settings:rt')).toBe(true);
+      expect(satisfiedEventsRef.current.has('v2:dashboard:settings:rt')).toBe(
+        true
+      );
     });
   });
 });
