@@ -18,7 +18,7 @@ import type { UbidotsState, UbidotsActions, ReadyEvent } from '@/types';
 import { initialState, ubidotsReducer } from './UbidotsReducer';
 import { handleInboundMessage, checkReadyState } from './messageHandlers';
 import { createActions } from './actions';
-import { DEFAULT_READY_EVENTS } from './constants';
+import { ACTION_TYPES, DEFAULT_READY_EVENTS } from './constants';
 
 export interface UbidotsContextValue {
   state: UbidotsState;
@@ -50,6 +50,7 @@ export interface UbidotsProviderProps {
   readyEvents?: ReadyEvent[];
   validateOrigin?: (origin: string) => boolean;
   initialStateOverride?: Partial<typeof initialState>;
+  widgetId?: string;
 }
 
 export function UbidotsProvider({
@@ -58,6 +59,7 @@ export function UbidotsProvider({
   readyEvents = DEFAULT_READY_EVENTS,
   validateOrigin,
   initialStateOverride,
+  widgetId,
 }: UbidotsProviderProps) {
   const [state, dispatch] = useReducer(ubidotsReducer, {
     ...initialState,
@@ -65,6 +67,17 @@ export function UbidotsProvider({
   });
   const readyRef = useRef(false);
   const satisfiedEventsRef = useRef(new Set<ReadyEvent>());
+  // Mutable ref so the message handler always reads the latest state
+  // without needing state in its dependency array.
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  // Set widgetId in state
+  useEffect(() => {
+    if (widgetId) {
+      dispatch({ type: ACTION_TYPES.SET_WIDGET_ID, payload: widgetId });
+    }
+  }, [widgetId]);
 
   const isOriginValid = useCallback(
     (origin: string) => (validateOrigin ? validateOrigin(origin) : true),
@@ -81,12 +94,15 @@ export function UbidotsProvider({
 
       if (event) {
         handleInboundMessage(event, payload, dispatch, satisfiedEventsRef);
+        // Use stateRef.current so this effect doesn't re-register on every
+        // state update. The second useEffect below also runs checkReadyState
+        // on state changes to catch the state-value-based ready condition.
         checkReadyState(
           readyEvents,
           satisfiedEventsRef,
           readyRef,
           dispatch,
-          state,
+          stateRef.current,
           onReady
         );
       }
@@ -94,7 +110,7 @@ export function UbidotsProvider({
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [isOriginValid, onReady, readyEvents, state]);
+  }, [isOriginValid, onReady, readyEvents]);
 
   useEffect(() => {
     checkReadyState(
@@ -108,8 +124,8 @@ export function UbidotsProvider({
   }, [state, readyEvents, onReady]);
 
   const actions = useMemo(
-    () => createActions(state.jwtToken, state.token),
-    [state.jwtToken, state.token]
+    () => createActions(state.jwtToken, state.token, state.widgetId),
+    [state.jwtToken, state.token, state.widgetId]
   );
 
   const value = useMemo<UbidotsContextValue>(

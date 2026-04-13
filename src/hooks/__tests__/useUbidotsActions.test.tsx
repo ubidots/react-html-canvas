@@ -39,9 +39,8 @@ describe('useUbidotsActions', () => {
       delete (window as unknown as Record<string, unknown>).widgetId;
     });
 
-    it('should use window.widgetId when available', () => {
+    it('should use widgetId from UbidotsProvider prop', () => {
       const testWidgetId = 'test-widget-123';
-      (window as unknown as Record<string, unknown>).widgetId = testWidgetId;
 
       const TestComponent = () => {
         const actions = useUbidotsActions();
@@ -52,7 +51,7 @@ describe('useUbidotsActions', () => {
       };
 
       render(
-        <UbidotsProvider>
+        <UbidotsProvider widgetId={testWidgetId}>
           <TestComponent />
         </UbidotsProvider>
       );

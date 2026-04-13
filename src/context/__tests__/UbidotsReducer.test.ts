@@ -42,4 +42,30 @@ describe('ubidotsReducer', () => {
     const s2 = ubidotsReducer(s1, { type: 'SET_READY', payload: true });
     expect(s2.ready).toBe(true);
   });
+
+  it('should handle SET_WIDGET_ID action', () => {
+    const s1 = ubidotsReducer(initialState, {
+      type: 'SET_WIDGET_ID',
+      payload: 'widget-123',
+    });
+    expect(s1.widgetId).toBe('widget-123');
+  });
+
+  it('should handle SET_WIDGET_ID with null payload', () => {
+    const stateWithWidgetId = ubidotsReducer(initialState, {
+      type: 'SET_WIDGET_ID',
+      payload: 'widget-abc',
+    });
+    expect(stateWithWidgetId.widgetId).toBe('widget-abc');
+
+    const s2 = ubidotsReducer(stateWithWidgetId, {
+      type: 'SET_WIDGET_ID',
+      payload: null,
+    });
+    expect(s2.widgetId).toBeNull();
+  });
+
+  it('should have widgetId as null in initial state', () => {
+    expect(initialState.widgetId).toBeNull();
+  });
 });

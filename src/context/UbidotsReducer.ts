@@ -23,6 +23,7 @@ export const initialState: UbidotsState = {
   selectedFilters: null,
   realTime: null,
   widget: null,
+  widgetId: null,
 };
 
 /**
@@ -79,6 +80,10 @@ const reducerHandlers: Record<
   [ACTION_TYPES.SET_WIDGET]: (state, action) => ({
     ...state,
     widget: action.payload as WidgetInfo | null,
+  }),
+  [ACTION_TYPES.SET_WIDGET_ID]: (state, action) => ({
+    ...state,
+    widgetId: action.payload as string | null,
   }),
 };
 
