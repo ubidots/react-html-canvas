@@ -183,6 +183,13 @@ const messageHandlers: Record<string, MessageHandler> = {
     });
     satisfiedEventsRef.current.add(INBOUND_EVENTS_V2.JWT);
   },
+  [INBOUND_EVENTS_V2.DEVICES_ALL]: (payload, dispatch, satisfiedEventsRef) => {
+    dispatch({
+      type: ACTION_TYPES.DASHBOARD_DEVICES,
+      payload: payload as Device[] | null,
+    });
+    satisfiedEventsRef.current.add(INBOUND_EVENTS_V2.DEVICES_ALL);
+  },
 
   [INBOUND_EVENTS_V2.SELECTED_DEVICES]: (
     payload,

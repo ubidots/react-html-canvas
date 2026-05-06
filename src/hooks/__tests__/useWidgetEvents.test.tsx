@@ -43,7 +43,7 @@ describe('useWidgetEvents', () => {
 
       expect(postMessageSpy).toHaveBeenCalledWith(
         {
-          event: 'v2:widget:widget-123:custom-event',
+          event: 'v2:widget:custom-event:widget-123',
           payload: { data: 'test' },
         },
         '*'
@@ -75,7 +75,7 @@ describe('useWidgetEvents', () => {
 
       expect(postMessageSpy).toHaveBeenCalledWith(
         {
-          event: 'v2:widget:provider-widget:test-event',
+          event: 'v2:widget:test-event:provider-widget',
           payload: { value: 42 },
         },
         '*'
@@ -140,7 +140,7 @@ describe('useWidgetEvents', () => {
 
       expect(postMessageSpy).toHaveBeenCalledWith(
         {
-          event: 'v2:widget:widget-abc:ping',
+          event: 'v2:widget:ping:widget-abc',
           payload: undefined,
         },
         '*'
@@ -454,7 +454,7 @@ describe('useWidgetEvents', () => {
             call[0] &&
             typeof call[0] === 'object' &&
             'event' in call[0] &&
-            call[0].event === 'v2:widget:lifecycle-widget:ready'
+            call[0].event === 'v2:widget:ready:lifecycle-widget'
         );
         expect(readyCall).toBeDefined();
       });
@@ -464,11 +464,11 @@ describe('useWidgetEvents', () => {
           call[0] &&
           typeof call[0] === 'object' &&
           'event' in call[0] &&
-          call[0].event === 'v2:widget:lifecycle-widget:ready'
+          call[0].event === 'v2:widget:ready:lifecycle-widget'
       );
 
       expect(readyCall![0]).toMatchObject({
-        event: 'v2:widget:lifecycle-widget:ready',
+        event: 'v2:widget:ready:lifecycle-widget',
         payload: expect.objectContaining({
           widgetId: 'lifecycle-widget',
           timestamp: expect.any(Number),

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useUbidots } from '../context/ubidots';
+import { INBOUND_EVENTS_V2 } from '../context/constants';
 import { useUbidotsWidgetId } from './useUbidotsSelections';
 
 /**
@@ -31,7 +32,7 @@ export function useWidgetEvents(widgetIdParam?: string) {
         return;
       }
 
-      const eventName = `v2:widget:${widgetId}:${event}`;
+      const eventName = `v2:widget:${event}:${widgetId}`;
 
       // Emit to parent window
       window.parent.postMessage(
@@ -123,6 +124,42 @@ export function useWidgetEvents(widgetIdParam?: string) {
     };
   }, []);
 
+  const onData = useCallback(
+    (callback: (payload: unknown) => void) => {
+      if (!widgetId) return () => {};
+      const event = `${INBOUND_EVENTS_V2.WIDGET_DATA}:${widgetId}`;
+      return onWidgetEvent(event, callback);
+    },
+    [widgetId, onWidgetEvent]
+  );
+
+  const onInfo = useCallback(
+    (callback: (payload: unknown) => void) => {
+      if (!widgetId) return () => {};
+      const event = `${INBOUND_EVENTS_V2.WIDGET_INFO}:${widgetId}`;
+      return onWidgetEvent(event, callback);
+    },
+    [widgetId, onWidgetEvent]
+  );
+
+  const onError = useCallback(
+    (callback: (payload: unknown) => void) => {
+      if (!widgetId) return () => {};
+      const event = `${INBOUND_EVENTS_V2.WIDGET_ERROR}:${widgetId}`;
+      return onWidgetEvent(event, callback);
+    },
+    [widgetId, onWidgetEvent]
+  );
+
+  const onReady = useCallback(
+    (callback: (payload: unknown) => void) => {
+      if (!widgetId) return () => {};
+      const event = `${INBOUND_EVENTS_V2.WIDGET_READY}:${widgetId}`;
+      return onWidgetEvent(event, callback);
+    },
+    [widgetId, onWidgetEvent]
+  );
+
   // Emit lifecycle events
   useEffect(() => {
     if (widgetId && state.ready) {
@@ -134,6 +171,10 @@ export function useWidgetEvents(widgetIdParam?: string) {
     emitWidgetEvent,
     onWidgetEvent,
     onAnyWidgetEvent,
+    onData,
+    onInfo,
+    onError,
+    onReady,
     widgetId,
   };
 }

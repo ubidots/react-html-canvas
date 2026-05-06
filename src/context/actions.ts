@@ -27,21 +27,19 @@ function postMessageWithV2(
  */
 function generateHeaders(
   jwtToken: string | null,
-  token: string | null
+  token: string | null,
+  receivedHeaders: Record<string, string> | null
 ): Record<string, string> {
+  const base: Record<string, string> = {
+    ...receivedHeaders,
+    'Content-type': 'application/json',
+  };
   if (jwtToken) {
-    return {
-      Authorization: `Bearer ${jwtToken}`,
-      'Content-type': 'application/json',
-    };
+    base['Authorization'] = `Bearer ${jwtToken}`;
+  } else if (token) {
+    base['X-Auth-Token'] = token;
   }
-  if (token) {
-    return {
-      'X-Auth-Token': token,
-      'Content-type': 'application/json',
-    };
-  }
-  return { 'Content-type': 'application/json' };
+  return base;
 }
 
 /**
@@ -103,8 +101,11 @@ const actionCreators = {
   },
 
   setDashboardLayer: (layerId: string) => {
-    // V2 protocol has no equivalent for layer yet — only V1 is sent.
-    postMessage(OUTBOUND_EVENTS.SET_DASHBOARD_LAYER, layerId);
+    postMessageWithV2(
+      OUTBOUND_EVENTS.SET_DASHBOARD_LAYER,
+      OUTBOUND_EVENTS_V2.SET_DASHBOARD_LAYER,
+      layerId
+    );
   },
 
   setRealTime: (rt: boolean) =>
@@ -136,7 +137,8 @@ const actionCreators = {
 export function createActions(
   jwtToken: string | null,
   token: string | null,
-  widgetId: string | null
+  widgetId: string | null,
+  receivedHeaders: Record<string, string> | null
 ): OutboundActions {
   return {
     ...actionCreators,
@@ -148,6 +150,6 @@ export function createActions(
         payload
       );
     },
-    getHeaders: () => generateHeaders(jwtToken, token),
+    getHeaders: () => generateHeaders(jwtToken, token, receivedHeaders),
   };
 }
