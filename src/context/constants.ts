@@ -44,6 +44,11 @@ export const INBOUND_EVENTS_V2 = {
   REFRESH_DASHBOARD: 'v2:dashboard:settings:refreshed',
   REALTIME_ACTIVE: 'v2:dashboard:settings:rt',
   SELECTED_DASHBOARD_OBJECT: 'v2:dashboard:self',
+  // Widget events (base names — full event is v2:widget:<event>:<widgetId>)
+  WIDGET_DATA: 'v2:widget:data',
+  WIDGET_INFO: 'v2:widget:info',
+  WIDGET_READY: 'v2:widget:ready',
+  WIDGET_ERROR: 'v2:widget:error',
   SELECTED_FILTERS: 'v2:dashboard:settings:filters',
 } as const;
 
@@ -68,6 +73,7 @@ export const ACTION_TYPES = {
   SELECTED_DEVICE_OBJECT: 'SELECTED_DEVICE_OBJECT',
   SELECTED_DEVICE_OBJECTS: 'SELECTED_DEVICE_OBJECTS',
   SELECTED_FILTERS: 'SELECTED_FILTERS',
+  DASHBOARD_DEVICES: 'DASHBOARD_DEVICES',
   REAL_TIME_STATUS: 'REAL_TIME_STATUS',
   SET_READY: 'SET_READY',
   SET_WIDGET: 'SET_WIDGET',

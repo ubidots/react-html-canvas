@@ -21,6 +21,7 @@ export const initialState: UbidotsState = {
   deviceObject: null,
   selectedDeviceObjects: null,
   selectedFilters: null,
+  dashboardDevices: null,
   realTime: null,
   widget: null,
   widgetId: null,
@@ -68,6 +69,10 @@ const reducerHandlers: Record<
   [ACTION_TYPES.SELECTED_FILTERS]: (state, action) => ({
     ...state,
     selectedFilters: action.payload as FilterValue[] | null,
+  }),
+  [ACTION_TYPES.DASHBOARD_DEVICES]: (state, action) => ({
+    ...state,
+    dashboardDevices: action.payload as Device[] | null,
   }),
   [ACTION_TYPES.REAL_TIME_STATUS]: (state, action) => ({
     ...state,

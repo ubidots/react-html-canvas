@@ -21,7 +21,8 @@ export type ReadyEventV2 =
   | 'v2:dashboard:settings:refreshed'
   | 'v2:dashboard:settings:rt'
   | 'v2:dashboard:self'
-  | 'v2:dashboard:settings:filters';
+  | 'v2:dashboard:settings:filters'
+  | 'v2:dashboard:devices:self';
 
 // Combined type for backward compatibility
 export type ReadyEvent = ReadyEventV1 | ReadyEventV2;
@@ -72,6 +73,7 @@ export interface UbidotsState {
   deviceObject: DeviceObject | null;
   selectedDeviceObjects: DeviceObject[] | null;
   selectedFilters: FilterValue[] | null;
+  dashboardDevices: Device[] | null;
   realTime: boolean | null;
   widget: WidgetInfo | null;
   widgetId: string | null;
@@ -87,6 +89,7 @@ export type UbidotsAction =
   | { type: 'SELECTED_DEVICE_OBJECT'; payload: DeviceObject | null }
   | { type: 'SELECTED_DEVICE_OBJECTS'; payload: DeviceObject[] | null }
   | { type: 'SELECTED_FILTERS'; payload: FilterValue[] | null }
+  | { type: 'DASHBOARD_DEVICES'; payload: Device[] | null }
   | { type: 'REAL_TIME_STATUS'; payload: boolean | null }
   | { type: 'SET_READY'; payload: boolean }
   | { type: 'SET_WIDGET'; payload: WidgetInfo | null }
