@@ -16,6 +16,7 @@ Complete documentation for `@ubidots/react-html-canvas` library.
 - [**useUbidotsActions**](./hooks/useUbidotsActions.md) - Dashboard actions
 - [**useUbidotsAPI**](./hooks/useUbidotsAPI.md) - API client
 - [**useUbidotsSelectedDevice**](./hooks/useUbidotsSelectedDevice.md) - Single device selection
+- [**useWidgetEvents**](./hooks/useWidgetEvents.md) - Widget data (`onInfo` / `onData`) and widget-to-widget events
 
 #### Other Hooks (Documentation Coming Soon)
 
